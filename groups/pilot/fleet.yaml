@@ -10,8 +10,10 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    # Referencia a los bundles de atlas-apps (otro GitRepo)
-    chart: git://atlas-apps/fleet/bundles/db
+    # Referencia al chart desde Helm Repository (ACR OCI)
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: poslite-db
+    version: 1.0.0
     values:
       # Valores específicos del grupo pilot
       postgresql:
@@ -25,7 +27,9 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    chart: git://atlas-apps/fleet/bundles/core
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: poslite-core
+    version: 1.0.0
     values:
       portal:
         enabled: true
@@ -38,7 +42,9 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    chart: git://atlas-apps/fleet/bundles/cloudflared
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: poslite-cloudflared
+    version: 1.0.0
     values:
       replicas: 1
       hostNetwork: true

@@ -10,7 +10,9 @@ targetCustomizations:
       atlas: "true"
       wave: "wave2"
   helm:
-    chart: git://atlas-apps/fleet/bundles/db
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: poslite-db
+    version: 1.0.0
     values:
       postgresql:
         timezone: "America/Panama"
@@ -23,7 +25,9 @@ targetCustomizations:
       atlas: "true"
       wave: "wave2"
   helm:
-    chart: git://atlas-apps/fleet/bundles/core
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: poslite-core
+    version: 1.0.0
     values:
       portal:
         enabled: true
@@ -36,7 +40,9 @@ targetCustomizations:
       atlas: "true"
       wave: "wave2"
   helm:
-    chart: git://atlas-apps/fleet/bundles/cloudflared
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: poslite-cloudflared
+    version: 1.0.0
     values:
       replicas: 1
       hostNetwork: true
