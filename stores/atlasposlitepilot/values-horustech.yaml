@@ -3,7 +3,7 @@
 # Este archivo se usa con el chart poslite-horustech
 
 # Configuración de imágenes
-imageTag: stable  # stable, latest, unstable
+imageTag: unstable  # stable, latest, unstable
 
 # Guard API
 guardApi:
