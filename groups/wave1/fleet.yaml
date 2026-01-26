@@ -10,7 +10,7 @@ targetCustomizations:
       atlas: "true"
       wave: "wave1"
   helm:
-    chart: ../../atlas-apps/fleet/bundles/db
+    chart: git://atlas-apps/fleet/bundles/db
     values:
       postgresql:
         timezone: "America/Panama"
@@ -23,7 +23,7 @@ targetCustomizations:
       atlas: "true"
       wave: "wave1"
   helm:
-    chart: ../../atlas-apps/fleet/bundles/core
+    chart: git://atlas-apps/fleet/bundles/core
     values:
       portal:
         enabled: true
@@ -36,7 +36,7 @@ targetCustomizations:
       atlas: "true"
       wave: "wave1"
   helm:
-    chart: ../../atlas-apps/fleet/bundles/cloudflared
+    chart: git://atlas-apps/fleet/bundles/cloudflared
     values:
       replicas: 1
       hostNetwork: true

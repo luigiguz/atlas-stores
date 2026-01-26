@@ -10,8 +10,8 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    # Referencia a los bundles de atlas-apps
-    chart: ../../atlas-apps/fleet/bundles/db
+    # Referencia a los bundles de atlas-apps (otro GitRepo)
+    chart: git://atlas-apps/fleet/bundles/db
     values:
       # Valores específicos del grupo pilot
       postgresql:
@@ -25,7 +25,7 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    chart: ../../atlas-apps/fleet/bundles/core
+    chart: git://atlas-apps/fleet/bundles/core
     values:
       portal:
         enabled: true
@@ -38,7 +38,7 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    chart: ../../atlas-apps/fleet/bundles/cloudflared
+    chart: git://atlas-apps/fleet/bundles/cloudflared
     values:
       replicas: 1
       hostNetwork: true
