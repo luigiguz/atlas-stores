@@ -1,0 +1,27 @@
+# Configuración específica para PostgreSQL
+# Tienda: aspdemoshorustech
+# Este archivo se usa con el chart poslite-db
+
+postgresql:
+  user: sa
+  password: ""  # Se debe proporcionar vía Secret
+  database: poslite
+  timezone: "America/Panama"
+  shmSize: "128mb"
+
+pgadmin:
+  enabled: true
+  defaultEmail: admin@admin.com
+  defaultPassword: ""  # Se debe proporcionar vía Secret
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 20Gi
+  accessMode: ReadWriteOnce
+
+# Configuración de PostgreSQL (postgresql.conf)
+configMap:
+  postgresqlConf: |
+    # Configuración personalizada de PostgreSQL
+    # Se puede sobrescribir aquí

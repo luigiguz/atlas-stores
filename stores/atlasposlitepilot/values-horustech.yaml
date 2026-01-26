@@ -1,0 +1,90 @@
+# Configuración específica para Horustech
+# Tienda: aspdemoshorustech
+# Este archivo se usa con el chart poslite-horustech
+
+# Configuración de imágenes
+imageTag: unstable  # stable, latest, unstable
+
+# Guard API
+guardApi:
+  enabled: true
+  license:
+    enabled: true
+    licensesDir: "/datos/.licenses/Horustech"
+
+# Servicios principales
+portal:
+  enabled: true
+  replicas: 1
+
+webapi:
+  enabled: true
+  replicas: 1
+
+coreWebapi:
+  enabled: true
+  replicas: 1
+
+coreWebevents:
+  enabled: true
+  replicas: 1
+
+coreLoyaltyConfigWorker:
+  enabled: true
+  replicas: 1
+
+# Configuración específica de Horustech
+config:
+  timezone: "America/Panama"
+  companyId: 1
+  coreApiKey: "TEST"
+  horustechApiKey: "TEST"
+  ierpUrl: "http://ierpgateway.azurewebsites.net/"
+  horustechIp: "192.168.10.100"  # IP principal del sistema Horustech - CONFIGURAR
+  horustechPortWebapi: "857"  # Puerto WebAPI - CONFIGURAR
+  horustechPortWorkers: "1771"  # Puerto Workers - CONFIGURAR
+  horustechTanksIp: ""  # IP para tanques (opcional)
+  horustechTlsPort: 10002
+
+# Workers
+workers:
+  price:
+    enabled: true
+  shift:
+    enabled: true
+  errorReports:
+    enabled: true
+  dispatches:
+    enabled: true
+  tanks:
+    enabled: true
+  ierp:
+    enabled: true
+    dispatchesToInvoice:
+      enabled: true
+    dispatchPayments:
+      enabled: true
+    invoicesToIerp:
+      enabled: true
+    customers:
+      enabled: true
+    markets:
+      enabled: true
+    basicData:
+      enabled: true
+    invoiceSeries:
+      enabled: true
+    products:
+      enabled: true
+
+# Volúmenes persistentes
+persistence:
+  uploads:
+    enabled: true
+    size: 10Gi
+  licenses:
+    enabled: true
+    size: 1Gi
+  pointer:
+    enabled: true
+    size: 5Gi

@@ -12,7 +12,7 @@ atlas-stores/
 │       ├── values-db.yaml          # Configuración de base de datos
 │       ├── values-pam.yaml         # Configuración PAM (si aplica)
 │       ├── values-horustech.yaml   # Configuración Horustech (si aplica)
-│       └── secrets.sops.yaml        # Secretos encriptados con SOPS
+│       └── secrets.yaml             # Secretos (puede usar SOPS opcionalmente)
 └── groups/
     ├── pilot.yaml                  # Grupo de tiendas piloto
     ├── wave1.yaml                  # Primera ola de migración
@@ -39,16 +39,31 @@ Editar los archivos `values-*.yaml` con la configuración específica de la tien
 
 ### 4. Crear secretos
 
+**Opción A: Sin encriptación (Recomendado para empezar)**
+
+```bash
+# Copiar template
+cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<nombre-tienda>/secrets.yaml
+
+# Editar secretos directamente
+vim stores/<nombre-tienda>/secrets.yaml
+
+# ¡Listo! Fleet leerá el archivo directamente
+```
+
+**Opción B: Con SOPS (Opcional - solo si necesitas encriptación)**
+
 ```bash
 # Copiar template
 cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<nombre-tienda>/secrets.sops.yaml
 
-# Editar secretos (sin encriptar)
-vim stores/<nombre-tienda>/secrets.sops.yaml
+# Editar secretos (se desencripta automáticamente)
+sops stores/<nombre-tienda>/secrets.sops.yaml
 
-# Encriptar con SOPS
-sops -e -i stores/<nombre-tienda>/secrets.sops.yaml
+# Guardar (se encripta automáticamente)
 ```
+
+**Nota:** Fleet NO desencripta SOPS automáticamente. Si usas SOPS, necesitarás desencriptar manualmente o usar Sealed Secrets/External Secrets Operator.
 
 ### 5. Aplicar labels al cluster
 
@@ -61,9 +76,39 @@ poslite: "pam"  # o "horustech"
 wave: "pilot"   # o "wave1", "wave2"
 ```
 
-## Gestión de Secretos con SOPS
+## Gestión de Secretos
 
-### Instalación de SOPS
+### Opción 1: Archivos YAML sin Encriptar (Recomendado)
+
+Fleet puede leer archivos `secrets.yaml` directamente sin necesidad de encriptación:
+
+```bash
+# Crear archivo de secretos
+cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<tienda>/secrets.yaml
+
+# Editar directamente
+vim stores/<tienda>/secrets.yaml
+
+# Commit y push - Fleet lo aplicará automáticamente
+git add stores/<tienda>/secrets.yaml
+git commit -m "Agregar secretos para tienda"
+git push
+```
+
+**Ventajas:**
+- ✅ Simple y directo
+- ✅ Fleet lo maneja automáticamente
+- ✅ No requiere configuración adicional
+
+**Desventajas:**
+- ⚠️ Secretos visibles en el repositorio Git
+- ⚠️ Cualquiera con acceso al repo puede verlos
+
+### Opción 2: SOPS (Opcional - Solo si necesitas encriptación)
+
+Si necesitas encriptar los secretos en Git, puedes usar SOPS:
+
+#### Instalación de SOPS
 
 ```bash
 # Linux
@@ -75,7 +120,7 @@ sudo chmod +x /usr/local/bin/sops
 brew install sops
 ```
 
-### Configuración de SOPS
+#### Configuración de SOPS
 
 Crear archivo `.sops.yaml` en la raíz del repositorio:
 
@@ -86,7 +131,7 @@ creation_rules:
       FINGERPRINT_DE_LA_CLAVE_PGP
 ```
 
-### Uso de SOPS
+#### Uso de SOPS
 
 ```bash
 # Editar archivo encriptado
@@ -98,6 +143,13 @@ sops -e -i stores/<tienda>/secrets.sops.yaml
 # Desencriptar para ver contenido
 sops -d stores/<tienda>/secrets.sops.yaml
 ```
+
+**⚠️ Importante:** Fleet NO desencripta SOPS automáticamente. Si usas SOPS, necesitarás:
+- Desencriptar manualmente antes de aplicar, O
+- Usar Sealed Secrets Operator, O
+- Usar External Secrets Operator
+
+**Recomendación:** Para empezar, usa archivos `secrets.yaml` sin encriptar. Puedes migrar a SOPS más adelante si es necesario.
 
 ## Variables Importantes
 
@@ -136,8 +188,9 @@ Fleet leerá automáticamente los archivos de este repositorio y aplicará la co
 
 ## Mejores Prácticas
 
-1. **Nunca commitear secretos sin encriptar**
-   - Usar siempre SOPS para encriptar antes de commitear
+1. **Gestionar secretos según tu necesidad**
+   - Si el repositorio es privado y confías en el equipo: usar `secrets.yaml` sin encriptar
+   - Si necesitas encriptación: usar SOPS o Sealed Secrets
 
 2. **Usar valores por defecto cuando sea posible**
    - Solo sobrescribir valores que sean específicos de la tienda
@@ -147,7 +200,7 @@ Fleet leerá automáticamente los archivos de este repositorio y aplicará la co
 
 4. **Validar antes de mergear**
    - Verificar que los valores YAML sean válidos
-   - Verificar que los secretos estén encriptados
+   - Si usas SOPS, verificar que los secretos estén encriptados
 
 5. **Usar branches para cambios grandes**
    - Crear branches para cambios que afecten múltiples tiendas
@@ -164,9 +217,10 @@ Fleet leerá automáticamente los archivos de este repositorio y aplicará la co
 ### Problema: Secretos no se aplican
 
 **Solución**:
-1. Verificar que SOPS esté configurado correctamente
-2. Verificar que el archivo esté encriptado: `sops -d secrets.sops.yaml`
+1. Verificar que el archivo `secrets.yaml` exista en la carpeta de la tienda
+2. Verificar que el archivo tenga sintaxis YAML válida
 3. Verificar que Fleet tenga permisos para leer el Secret
+4. Si usas SOPS: verificar que el archivo esté desencriptado o que uses Sealed Secrets
 
 ### Problema: Valores no se aplican correctamente
 

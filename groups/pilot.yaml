@@ -1,0 +1,44 @@
+# Grupo de despliegue: Pilot
+# Tiendas en fase piloto de migración
+
+defaultNamespace: poslite
+
+targetCustomizations:
+- name: pilot-stores
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      wave: "pilot"
+  helm:
+    # Referencia a los bundles de atlas-apps
+    chart: ../../atlas-apps/fleet/bundles/db
+    values:
+      # Valores específicos del grupo pilot
+      postgresql:
+        timezone: "America/Panama"
+      persistence:
+        storageClass: local-path
+
+- name: pilot-core
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      wave: "pilot"
+  helm:
+    chart: ../../atlas-apps/fleet/bundles/core
+    values:
+      portal:
+        enabled: true
+      webapi:
+        enabled: true
+
+- name: pilot-cloudflared
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      wave: "pilot"
+  helm:
+    chart: ../../atlas-apps/fleet/bundles/cloudflared
+    values:
+      replicas: 1
+      hostNetwork: true
