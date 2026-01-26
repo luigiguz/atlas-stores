@@ -40,9 +40,9 @@ config:
   coreApiKey: "TEST"
   horustechApiKey: "TEST"
   ierpUrl: "http://ierpgateway.azurewebsites.net/"
-  horustechIp: ""  # IP principal del sistema Horustech - CONFIGURAR
-  horustechPortWebapi: ""  # Puerto WebAPI - CONFIGURAR
-  horustechPortWorkers: ""  # Puerto Workers - CONFIGURAR
+  horustechIp: "192.168.10.100"  # IP principal del sistema Horustech - CONFIGURAR
+  horustechPortWebapi: "857"  # Puerto WebAPI - CONFIGURAR
+  horustechPortWorkers: "1771"  # Puerto Workers - CONFIGURAR
   horustechTanksIp: ""  # IP para tanques (opcional)
   horustechTlsPort: 10002
 
