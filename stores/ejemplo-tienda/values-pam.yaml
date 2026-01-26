@@ -1,0 +1,94 @@
+# Configuración específica para PAM
+# Este archivo se usa con el chart poslite-pam
+
+# Configuración de imágenes
+imageTag: stable  # stable, latest, unstable
+
+# Guard API
+guardApi:
+  enabled: true
+  license:
+    enabled: true
+    licensesDir: "/datos/.licenses/Pam"
+
+# Servicios principales
+portal:
+  enabled: true
+  replicas: 1
+
+webapi:
+  enabled: true
+  replicas: 1
+
+tcpconnector:
+  enabled: true
+  replicas: 1
+
+scraper:
+  enabled: true
+  replicas: 1
+
+playwright:
+  enabled: true
+  replicas: 1
+
+coreWebapi:
+  enabled: true
+  replicas: 1
+
+coreWebevents:
+  enabled: true
+  replicas: 1
+
+# Configuración específica de PAM
+config:
+  timezone: "America/Panama"
+  companyId: 1
+  coreApiKey: "TEST"
+  ierpUrl: "http://ierpgateway.azurewebsites.net/"
+  pamIp: ""  # IP del sistema PAM
+  pamPassword: ""  # Se debe proporcionar vía Secret
+
+# Workers
+workers:
+  price:
+    enabled: true
+  shift:
+    enabled: true
+  errorReports:
+    enabled: true
+  dispatches:
+    enabled: true
+  shifts:
+    enabled: true
+  totalizers:
+    enabled: true
+  tankstock:
+    enabled: true
+  ierp:
+    enabled: true
+    dispatchesToInvoice:
+      enabled: true
+    dispatchPayments:
+      enabled: true
+    invoicesToIerp:
+      enabled: true
+    customers:
+      enabled: true
+    markets:
+      enabled: true
+    basicData:
+      enabled: true
+    invoiceSeries:
+      enabled: true
+    products:
+      enabled: true
+
+# Volúmenes persistentes
+persistence:
+  uploads:
+    enabled: true
+    size: 10Gi
+  licenses:
+    enabled: true
+    size: 1Gi
