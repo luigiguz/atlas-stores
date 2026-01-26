@@ -10,8 +10,7 @@ targetCustomizations:
       atlas: "true"
       wave: "wave2"
   helm:
-    repo: oci://atlashelmrepo.azurecr.io/helm
-    chart: poslite-db
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
     values:
       postgresql:
@@ -25,8 +24,7 @@ targetCustomizations:
       atlas: "true"
       wave: "wave2"
   helm:
-    repo: oci://atlashelmrepo.azurecr.io/helm
-    chart: poslite-core
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-core
     version: 1.0.0
     values:
       portal:
@@ -40,8 +38,7 @@ targetCustomizations:
       atlas: "true"
       wave: "wave2"
   helm:
-    repo: oci://atlashelmrepo.azurecr.io/helm
-    chart: poslite-cloudflared
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared
     version: 1.0.0
     values:
       replicas: 1

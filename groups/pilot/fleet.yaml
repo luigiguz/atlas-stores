@@ -10,9 +10,8 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    # Referencia al chart desde Helm Repository (ACR OCI)
-    repo: oci://atlashelmrepo.azurecr.io/helm
-    chart: poslite-db
+    # Referencia al chart desde ACR OCI (sintaxis correcta para Fleet)
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
     values:
       # Valores específicos del grupo pilot
@@ -27,8 +26,7 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    repo: oci://atlashelmrepo.azurecr.io/helm
-    chart: poslite-core
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-core
     version: 1.0.0
     values:
       portal:
@@ -42,8 +40,7 @@ targetCustomizations:
       atlas: "true"
       wave: "pilot"
   helm:
-    repo: oci://atlashelmrepo.azurecr.io/helm
-    chart: poslite-cloudflared
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared
     version: 1.0.0
     values:
       replicas: 1
