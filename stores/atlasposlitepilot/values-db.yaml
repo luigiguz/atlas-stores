@@ -4,7 +4,7 @@
 
 postgresql:
   user: sa
-  password: ""  # Se debe proporcionar vía Secret
+  password: "z@a?ALGm^=u6[8f]Ks5]"  # Se debe proporcionar vía Secret
   database: poslite
   timezone: "America/Panama"
   shmSize: "128mb"
