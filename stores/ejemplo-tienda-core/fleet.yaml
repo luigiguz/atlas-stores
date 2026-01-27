@@ -1,14 +1,19 @@
-# Bundle específico para la tienda: atlasposlitepilot
-# Este bundle se despliega automáticamente cuando el cluster tiene el label store: "atlasposlitepilot"
+# Bundle específico para la tienda: <nombre-tienda>
+# Configuración: SOLO CORE (sin Horustech ni PAM)
+# Este bundle se despliega automáticamente cuando el cluster tiene el label store: "<nombre-tienda>"
+#
+# INSTRUCCIONES:
+# 1. Reemplazar todas las ocurrencias de "<nombre-tienda>" con el nombre real de la tienda
+# 2. Este ejemplo solo incluye Core, BD y Cloudflared
 
 defaultNamespace: poslite
 
 targetCustomizations:
-- name: atlasposlitepilot-db
+- name: <nombre-tienda>-db
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "atlasposlitepilot"
+      store: "<nombre-tienda>"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
@@ -20,11 +25,11 @@ targetCustomizations:
       persistence:
         storageClass: local-path
 
-- name: atlasposlitepilot-core
+- name: <nombre-tienda>-core
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "atlasposlitepilot"
+      store: "<nombre-tienda>"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-core
     version: 1.0.0
@@ -37,24 +42,11 @@ targetCustomizations:
       webapi:
         enabled: true
 
-- name: atlasposlitepilot-horustech
+- name: <nombre-tienda>-cloudflared
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "atlasposlitepilot"
-      poslite: "horustech"
-  helm:
-    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-horustech
-    version: 1.0.0
-    valuesFiles:
-      - values-common.yaml
-      - values-horustech.yaml
-
-- name: atlasposlitepilot-cloudflared
-  clusterSelector:
-    matchLabels:
-      atlas: "true"
-      store: "atlasposlitepilot"
+      store: "<nombre-tienda>"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared
     version: 1.0.0

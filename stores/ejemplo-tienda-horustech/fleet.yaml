@@ -1,11 +1,11 @@
 # Bundle específico para la tienda: <nombre-tienda>
+# Configuración: HORUSTECH + CORE
 # Este bundle se despliega automáticamente cuando el cluster tiene el label store: "<nombre-tienda>"
 #
 # INSTRUCCIONES:
 # 1. Reemplazar todas las ocurrencias de "<nombre-tienda>" con el nombre real de la tienda
-# 2. Si la tienda solo usa Core (sin Horustech ni PAM), eliminar las secciones horustech y pam
-# 3. Si la tienda usa Horustech, eliminar la sección pam
-# 4. Si la tienda usa PAM, eliminar la sección horustech
+# 2. Este ejemplo incluye Horustech, Core, BD y Cloudflared
+# 3. El cluster debe tener el label: poslite: "horustech"
 
 defaultNamespace: poslite
 
@@ -55,19 +55,6 @@ targetCustomizations:
     valuesFiles:
       - values-common.yaml
       - values-horustech.yaml
-
-- name: <nombre-tienda>-pam
-  clusterSelector:
-    matchLabels:
-      atlas: "true"
-      store: "<nombre-tienda>"
-      poslite: "pam"
-  helm:
-    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-pam
-    version: 1.0.0
-    valuesFiles:
-      - values-common.yaml
-      - values-pam.yaml
 
 - name: <nombre-tienda>-cloudflared
   clusterSelector:

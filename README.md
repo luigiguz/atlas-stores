@@ -15,31 +15,110 @@ atlas-stores/
 │   │   ├── values-pam.yaml         # Configuración PAM (si aplica)
 │   │   ├── values-horustech.yaml   # Configuración Horustech (si aplica)
 │   │   └── secrets.yaml            # Secretos (puede usar SOPS opcionalmente)
-│   └── ejemplo-tienda/             # Template completo para nuevas tiendas
-│       ├── fleet.yaml              # Template de bundle Fleet
-│       ├── values-common.yaml      # Template de valores comunes
-│       ├── values-db.yaml          # Template de valores BD
-│       ├── values-core.yaml        # Template de valores Core
-│       ├── values-pam.yaml         # Template de valores PAM
-│       ├── values-horustech.yaml   # Template de valores Horustech
-│       └── secrets.sops.yaml.example  # Template de secretos
+│   └── ejemplo-tienda-*/           # Templates específicos por tipo
+│       ├── ejemplo-tienda-core/    # Solo Core + BD + Cloudflared
+│       ├── ejemplo-tienda-horustech/  # Horustech + Core + BD + Cloudflared
+│       ├── ejemplo-tienda-pam/     # PAM + Core + BD + Cloudflared
+│       └── ejemplo-tienda/         # Template completo (todos los tipos)
 └── groups/
     ├── core/                       # Template genérico para Core
     ├── horustech/                  # Template genérico para Horustech
     └── pam/                        # Template genérico para PAM
 ```
 
-## Crear Configuración para una Nueva Tienda
+## Ejemplos de Tiendas Disponibles
 
-### 1. Crear directorio de la tienda
+Este repositorio incluye ejemplos específicos para cada tipo de configuración:
 
-```bash
-mkdir -p stores/<nombre-tienda>
+### 1. `ejemplo-tienda-core/` - Solo Core
+**Configuración:** Core + BD + Cloudflared (sin Horustech ni PAM)
+
+**Contenido:**
+- `fleet.yaml` - Bundle con solo Core, BD y Cloudflared
+- `values-common.yaml` - Valores comunes
+- `values-db.yaml` - Configuración PostgreSQL
+- `values-core.yaml` - Configuración Core
+- `secrets.sops.yaml.example` - Template de secretos
+
+**Labels del cluster requeridos:**
+```yaml
+atlas: "true"
+store: "<nombre-tienda>"
+poslite: "core"  # Opcional, pero recomendado
 ```
 
-### 2. Copiar templates completos
+### 2. `ejemplo-tienda-horustech/` - Horustech + Core
+**Configuración:** Horustech + Core + BD + Cloudflared
+
+**Contenido:**
+- `fleet.yaml` - Bundle con Horustech, Core, BD y Cloudflared
+- `values-common.yaml` - Valores comunes
+- `values-db.yaml` - Configuración PostgreSQL
+- `values-core.yaml` - Configuración Core
+- `values-horustech.yaml` - Configuración Horustech
+- `secrets.sops.yaml.example` - Template de secretos
+
+**Labels del cluster requeridos:**
+```yaml
+atlas: "true"
+store: "<nombre-tienda>"
+poslite: "horustech"
+```
+
+### 3. `ejemplo-tienda-pam/` - PAM + Core
+**Configuración:** PAM + Core + BD + Cloudflared
+
+**Contenido:**
+- `fleet.yaml` - Bundle con PAM, Core, BD y Cloudflared
+- `values-common.yaml` - Valores comunes
+- `values-db.yaml` - Configuración PostgreSQL
+- `values-core.yaml` - Configuración Core
+- `values-pam.yaml` - Configuración PAM
+- `secrets.sops.yaml.example` - Template de secretos
+
+**Labels del cluster requeridos:**
+```yaml
+atlas: "true"
+store: "<nombre-tienda>"
+poslite: "pam"
+```
+
+### 4. `ejemplo-tienda/` - Template Completo
+**Configuración:** Template con todos los tipos (requiere edición)
+
+**Contenido:**
+- `fleet.yaml` - Bundle con todos los charts (Core, Horustech, PAM, BD, Cloudflared)
+- Todos los archivos `values-*.yaml`
+- Requiere eliminar secciones no necesarias según el tipo de tienda
+
+## Crear Configuración para una Nueva Tienda
+
+### Opción 1: Usar Ejemplo Específico (Recomendado)
+
+**Para tienda solo Core:**
+```bash
+mkdir -p stores/<nombre-tienda>
+cp -r stores/ejemplo-tienda-core/* stores/<nombre-tienda>/
+```
+
+**Para tienda Horustech + Core:**
+```bash
+mkdir -p stores/<nombre-tienda>
+cp -r stores/ejemplo-tienda-horustech/* stores/<nombre-tienda>/
+```
+
+**Para tienda PAM + Core:**
+```bash
+mkdir -p stores/<nombre-tienda>
+cp -r stores/ejemplo-tienda-pam/* stores/<nombre-tienda>/
+```
+
+### Opción 2: Usar Template Completo
 
 ```bash
+# Crear directorio de la tienda
+mkdir -p stores/<nombre-tienda>
+
 # Copiar todos los archivos del template
 cp -r stores/ejemplo-tienda/* stores/<nombre-tienda>/
 
@@ -67,12 +146,7 @@ sed -i 's/<nombre-tienda>/<nombre-real>/g' stores/<nombre-tienda>/fleet.yaml
 - `name: <nombre-tienda>-core` → `name: <nombre-real>-core`
 - Y así para todos los bundles
 
-**Importante:** Si la tienda solo usa Core (sin Horustech ni PAM):
-- Eliminar las secciones `horustech` y `pam` del `fleet.yaml`
-- Eliminar los archivos `values-horustech.yaml` y `values-pam.yaml` (opcional)
-
-Si usa Horustech, eliminar la sección `pam` y el archivo `values-pam.yaml`.  
-Si usa PAM, eliminar la sección `horustech` y el archivo `values-horustech.yaml`.
+**Nota:** Si usaste un ejemplo específico (`ejemplo-tienda-core`, `ejemplo-tienda-horustech`, o `ejemplo-tienda-pam`), el `fleet.yaml` ya está configurado correctamente y solo necesitas reemplazar el nombre. No necesitas eliminar secciones.
 
 ### 4. Editar valores
 
