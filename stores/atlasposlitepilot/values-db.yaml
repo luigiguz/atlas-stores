@@ -10,7 +10,7 @@ postgresql:
   shmSize: "128mb"
 
 pgadmin:
-  enabled: true
+  enabled: false
   defaultEmail: admin@admin.com
   defaultPassword: ""  # Se debe proporcionar vía Secret
 
