@@ -1,22 +1,24 @@
 # Atlas Stores - Configuración por Tienda
 
-Este repositorio contiene la configuración específica de cada tienda para el despliegue con Fleet.
+Este repositorio contiene la configuración específica de cada tienda para el despliegue con Fleet. Cada tienda tiene su propio bundle de Fleet que se despliega automáticamente según los labels del cluster.
 
 ## Estructura
 
 ```
 atlas-stores/
 ├── stores/
-│   └── <nombre-tienda>/
-│       ├── values-common.yaml      # Configuración común
-│       ├── values-db.yaml          # Configuración de base de datos
-│       ├── values-pam.yaml         # Configuración PAM (si aplica)
-│       ├── values-horustech.yaml   # Configuración Horustech (si aplica)
-│       └── secrets.yaml             # Secretos (puede usar SOPS opcionalmente)
+│   ├── <nombre-tienda>/
+│   │   ├── fleet.yaml              # Bundle de Fleet para esta tienda
+│   │   ├── values-common.yaml      # Configuración común
+│   │   ├── values-db.yaml          # Configuración de base de datos
+│   │   ├── values-pam.yaml         # Configuración PAM (si aplica)
+│   │   ├── values-horustech.yaml  # Configuración Horustech (si aplica)
+│   │   └── secrets.yaml            # Secretos (puede usar SOPS opcionalmente)
+│   └── ejemplo-tienda/            # Template para nuevas tiendas
 └── groups/
-    ├── pilot.yaml                  # Grupo de tiendas piloto
-    ├── wave1.yaml                  # Primera ola de migración
-    └── wave2.yaml                  # Segunda ola de migración
+    ├── core/                       # Template genérico para Core
+    ├── horustech/                  # Template genérico para Horustech
+    └── pam/                        # Template genérico para PAM
 ```
 
 ## Crear Configuración para una Nueva Tienda
@@ -30,14 +32,35 @@ mkdir -p stores/<nombre-tienda>
 ### 2. Copiar templates
 
 ```bash
+# Copiar archivos de valores
 cp stores/ejemplo-tienda/values-*.yaml stores/<nombre-tienda>/
+
+# Copiar template de fleet.yaml
+cp stores/atlasposlitepilot/fleet.yaml stores/<nombre-tienda>/fleet.yaml
 ```
 
-### 3. Editar valores
+### 3. Editar fleet.yaml
 
-Editar los archivos `values-*.yaml` con la configuración específica de la tienda.
+Editar `stores/<nombre-tienda>/fleet.yaml` y reemplazar todas las ocurrencias de `atlasposlitepilot` con el nombre de tu tienda:
 
-### 4. Crear secretos
+```bash
+# Reemplazar en el archivo
+sed -i 's/atlasposlitepilot/<nombre-tienda>/g' stores/<nombre-tienda>/fleet.yaml
+```
+
+O manualmente:
+- Cambiar `store: "atlasposlitepilot"` → `store: "<nombre-tienda>"`
+- Cambiar nombres de bundles: `atlasposlitepilot-db` → `<nombre-tienda>-db`
+
+### 4. Editar valores
+
+Editar los archivos `values-*.yaml` con la configuración específica de la tienda:
+
+- `values-common.yaml`: Configuración común (registry, timezone, recursos, etc.)
+- `values-db.yaml`: Configuración de PostgreSQL
+- `values-horustech.yaml` o `values-pam.yaml`: Configuración específica del sistema POS
+
+### 5. Crear secretos
 
 **Opción A: Sin encriptación (Recomendado para empezar)**
 
@@ -65,16 +88,31 @@ sops stores/<nombre-tienda>/secrets.sops.yaml
 
 **Nota:** Fleet NO desencripta SOPS automáticamente. Si usas SOPS, necesitarás desencriptar manualmente o usar Sealed Secrets/External Secrets Operator.
 
-### 5. Aplicar labels al cluster
+### 6. Aplicar labels al cluster
 
 En Rancher, aplicar los siguientes labels al cluster:
 
 ```yaml
 atlas: "true"
 store: "<nombre-tienda>"
-poslite: "pam"  # o "horustech"
-wave: "pilot"   # o "wave1", "wave2"
+poslite: "horustech"  # o "pam" o "core"
 ```
+
+**Cómo aplicar labels en Rancher:**
+1. Ve al cluster
+2. Click en **"⋮" (menú)** → **"Edit Config"**
+3. En la sección **"Labels"**, agrega los labels arriba
+4. Guardar
+
+### 7. Commit y Push
+
+```bash
+git add stores/<nombre-tienda>/
+git commit -m "Agregar nueva tienda: <nombre-tienda>"
+git push
+```
+
+Fleet detectará automáticamente el nuevo bundle y lo desplegará en el cluster con los labels correspondientes.
 
 ## Gestión de Secretos
 
@@ -179,12 +217,18 @@ sops -d stores/<tienda>/secrets.sops.yaml
 
 Fleet leerá automáticamente los archivos de este repositorio y aplicará la configuración según los labels de los clusters.
 
+### Cómo Funciona
+
+1. **Cada tienda tiene su propio bundle**: `stores/<tienda>/fleet.yaml`
+2. **Fleet detecta automáticamente** los bundles en subdirectorios
+3. **Los bundles se despliegan** cuando el cluster tiene el label `store: "<tienda>"`
+4. **Los valores se cargan** desde archivos relativos en el mismo directorio
+
 ### Orden de Precedencia
 
 1. Valores del chart (defaults)
-2. Valores del bundle en `atlas-apps`
-3. Valores del grupo en `groups/*.yaml`
-4. Valores específicos de la tienda en `stores/<tienda>/*.yaml`
+2. Valores del bundle en `stores/<tienda>/fleet.yaml` (valores inline)
+3. Valores de `valuesFiles` en el bundle (archivos YAML de la tienda)
 
 ## Mejores Prácticas
 
@@ -211,8 +255,9 @@ Fleet leerá automáticamente los archivos de este repositorio y aplicará la co
 
 **Solución**:
 1. Verificar que el repositorio esté registrado en Rancher
-2. Verificar que los labels del cluster sean correctos
+2. Verificar que los labels del cluster sean correctos (`atlas: "true"`, `store: "<tienda>"`)
 3. Verificar logs de Fleet: `kubectl logs -n fleet-system -l app=fleet-controller`
+4. Verificar bundles: `kubectl get bundles.fleet.cattle.io -n fleet-default`
 
 ### Problema: Secretos no se aplican
 
@@ -227,7 +272,16 @@ Fleet leerá automáticamente los archivos de este repositorio y aplicará la co
 **Solución**:
 1. Verificar orden de precedencia
 2. Verificar sintaxis YAML
-3. Verificar que los paths en los valores sean correctos
+3. Verificar que los paths en `valuesFiles` sean relativos al `fleet.yaml`
+4. Verificar que los archivos de valores existan en el directorio de la tienda
+
+### Problema: Bundle no se despliega
+
+**Solución**:
+1. Verificar que el `fleet.yaml` esté en `stores/<tienda>/fleet.yaml`
+2. Verificar que el cluster tenga el label `store: "<tienda>"`
+3. Verificar que el `clusterSelector` en el bundle coincida con los labels del cluster
+4. Ver logs: `kubectl describe bundle.fleet.cattle.io <nombre-bundle> -n fleet-default`
 
 ## Contacto
 

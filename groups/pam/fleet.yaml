@@ -1,28 +1,32 @@
-# Grupo de despliegue: Wave 1
-# Primera ola de migración después del pilot
+# Grupo de despliegue: PAM
+# Despliega: PAM + Core + BD + Cloudflared
+# Para tiendas que usan el sistema PAM
+#
+# NOTA: Este grupo es un template genérico. Para cada tienda, crea un bundle específico
+# en stores/<nombre-tienda>/fleet.yaml que referencia sus propios archivos de valores.
+#
+# Este archivo puede usarse como fallback o para configuraciones globales de PAM.
 
 defaultNamespace: poslite
 
 targetCustomizations:
-- name: wave1-stores
+- name: pam-db
   clusterSelector:
     matchLabels:
       atlas: "true"
-      wave: "wave1"
+      poslite: "pam"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
     values:
-      postgresql:
-        timezone: "America/Panama"
       persistence:
         storageClass: local-path
 
-- name: wave1-core
+- name: pam-core
   clusterSelector:
     matchLabels:
       atlas: "true"
-      wave: "wave1"
+      poslite: "pam"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-core
     version: 1.0.0
@@ -32,11 +36,20 @@ targetCustomizations:
       webapi:
         enabled: true
 
-- name: wave1-cloudflared
+- name: pam-app
   clusterSelector:
     matchLabels:
       atlas: "true"
-      wave: "wave1"
+      poslite: "pam"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-pam
+    version: 1.0.0
+
+- name: pam-cloudflared
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      poslite: "pam"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared
     version: 1.0.0

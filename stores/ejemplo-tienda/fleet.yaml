@@ -1,0 +1,84 @@
+# Bundle específico para la tienda: <nombre-tienda>
+# Este bundle se despliega automáticamente cuando el cluster tiene el label store: "<nombre-tienda>"
+#
+# INSTRUCCIONES:
+# 1. Reemplazar todas las ocurrencias de "<nombre-tienda>" con el nombre real de la tienda
+# 2. Si la tienda solo usa Core (sin Horustech ni PAM), eliminar las secciones horustech y pam
+# 3. Si la tienda usa Horustech, eliminar la sección pam
+# 4. Si la tienda usa PAM, eliminar la sección horustech
+
+defaultNamespace: poslite
+
+targetCustomizations:
+- name: <nombre-tienda>-db
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "<nombre-tienda>"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
+    version: 1.0.0
+    valuesFiles:
+      # Rutas relativas desde este archivo
+      - values-common.yaml
+      - values-db.yaml
+    values:
+      persistence:
+        storageClass: local-path
+
+- name: <nombre-tienda>-core
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "<nombre-tienda>"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-core
+    version: 1.0.0
+    valuesFiles:
+      - values-common.yaml
+      - values-core.yaml
+    values:
+      portal:
+        enabled: true
+      webapi:
+        enabled: true
+
+- name: <nombre-tienda>-horustech
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "<nombre-tienda>"
+      poslite: "horustech"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-horustech
+    version: 1.0.0
+    valuesFiles:
+      - values-common.yaml
+      - values-horustech.yaml
+
+- name: <nombre-tienda>-pam
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "<nombre-tienda>"
+      poslite: "pam"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-pam
+    version: 1.0.0
+    valuesFiles:
+      - values-common.yaml
+      - values-pam.yaml
+
+- name: <nombre-tienda>-cloudflared
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "<nombre-tienda>"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared
+    version: 1.0.0
+    valuesFiles:
+      - values-common.yaml
+    values:
+      replicas: 1
+      hostNetwork: true
