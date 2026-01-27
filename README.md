@@ -11,10 +11,18 @@ atlas-stores/
 │   │   ├── fleet.yaml              # Bundle de Fleet para esta tienda
 │   │   ├── values-common.yaml      # Configuración común
 │   │   ├── values-db.yaml          # Configuración de base de datos
+│   │   ├── values-core.yaml        # Configuración Core
 │   │   ├── values-pam.yaml         # Configuración PAM (si aplica)
-│   │   ├── values-horustech.yaml  # Configuración Horustech (si aplica)
+│   │   ├── values-horustech.yaml   # Configuración Horustech (si aplica)
 │   │   └── secrets.yaml            # Secretos (puede usar SOPS opcionalmente)
-│   └── ejemplo-tienda/            # Template para nuevas tiendas
+│   └── ejemplo-tienda/             # Template completo para nuevas tiendas
+│       ├── fleet.yaml              # Template de bundle Fleet
+│       ├── values-common.yaml      # Template de valores comunes
+│       ├── values-db.yaml          # Template de valores BD
+│       ├── values-core.yaml        # Template de valores Core
+│       ├── values-pam.yaml         # Template de valores PAM
+│       ├── values-horustech.yaml   # Template de valores Horustech
+│       └── secrets.sops.yaml.example  # Template de secretos
 └── groups/
     ├── core/                       # Template genérico para Core
     ├── horustech/                  # Template genérico para Horustech
@@ -29,28 +37,42 @@ atlas-stores/
 mkdir -p stores/<nombre-tienda>
 ```
 
-### 2. Copiar templates
+### 2. Copiar templates completos
 
 ```bash
-# Copiar archivos de valores
-cp stores/ejemplo-tienda/values-*.yaml stores/<nombre-tienda>/
+# Copiar todos los archivos del template
+cp -r stores/ejemplo-tienda/* stores/<nombre-tienda>/
 
-# Copiar template de fleet.yaml
-cp stores/atlasposlitepilot/fleet.yaml stores/<nombre-tienda>/fleet.yaml
+# O copiar archivos individuales
+cp stores/ejemplo-tienda/fleet.yaml stores/<nombre-tienda>/
+cp stores/ejemplo-tienda/values-*.yaml stores/<nombre-tienda>/
+cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<nombre-tienda>/secrets.yaml
 ```
 
 ### 3. Editar fleet.yaml
 
-Editar `stores/<nombre-tienda>/fleet.yaml` y reemplazar todas las ocurrencias de `atlasposlitepilot` con el nombre de tu tienda:
+Editar `stores/<nombre-tienda>/fleet.yaml` y reemplazar todas las ocurrencias de `<nombre-tienda>` con el nombre real de la tienda:
 
 ```bash
-# Reemplazar en el archivo
-sed -i 's/atlasposlitepilot/<nombre-tienda>/g' stores/<nombre-tienda>/fleet.yaml
+# Reemplazar en el archivo (Linux/macOS)
+sed -i 's/<nombre-tienda>/<nombre-real>/g' stores/<nombre-tienda>/fleet.yaml
+
+# O en Windows PowerShell
+(Get-Content stores/<nombre-tienda>/fleet.yaml) -replace '<nombre-tienda>', '<nombre-real>' | Set-Content stores/<nombre-tienda>/fleet.yaml
 ```
 
-O manualmente:
-- Cambiar `store: "atlasposlitepilot"` → `store: "<nombre-tienda>"`
-- Cambiar nombres de bundles: `atlasposlitepilot-db` → `<nombre-tienda>-db`
+**Reemplazos necesarios:**
+- `store: "<nombre-tienda>"` → `store: "<nombre-real>"`
+- `name: <nombre-tienda>-db` → `name: <nombre-real>-db`
+- `name: <nombre-tienda>-core` → `name: <nombre-real>-core`
+- Y así para todos los bundles
+
+**Importante:** Si la tienda solo usa Core (sin Horustech ni PAM):
+- Eliminar las secciones `horustech` y `pam` del `fleet.yaml`
+- Eliminar los archivos `values-horustech.yaml` y `values-pam.yaml` (opcional)
+
+Si usa Horustech, eliminar la sección `pam` y el archivo `values-pam.yaml`.  
+Si usa PAM, eliminar la sección `horustech` y el archivo `values-horustech.yaml`.
 
 ### 4. Editar valores
 
@@ -58,7 +80,8 @@ Editar los archivos `values-*.yaml` con la configuración específica de la tien
 
 - `values-common.yaml`: Configuración común (registry, timezone, recursos, etc.)
 - `values-db.yaml`: Configuración de PostgreSQL
-- `values-horustech.yaml` o `values-pam.yaml`: Configuración específica del sistema POS
+- `values-core.yaml`: Configuración de Core (Portal y WebAPI)
+- `values-horustech.yaml` o `values-pam.yaml`: Configuración específica del sistema POS (si aplica)
 
 ### 5. Crear secretos
 
@@ -194,12 +217,22 @@ sops -d stores/<tienda>/secrets.sops.yaml
 ### Base de Datos
 
 - `postgresql.password`: Contraseña de PostgreSQL
+- `postgresql.user`: Usuario de PostgreSQL (por defecto: `sa`)
+- `postgresql.database`: Nombre de la base de datos (por defecto: `poslite`)
 - `db-connection-string`: Cadena de conexión completa
+
+### Core
+
+- `portal.enabled`: Habilitar Portal (hostPort: 10014)
+- `webapi.enabled`: Habilitar WebAPI (hostPort: 10012)
+- `config.coreApiKey`: API Key para Core
+- `config.ierpUrl`: URL del gateway iERP
 
 ### PAM
 
 - `pam.password`: Contraseña de acceso al sistema PAM
 - `pam.ip`: IP del sistema PAM
+- `config.pamIp`: IP del sistema PAM (alternativa)
 
 ### Horustech
 
@@ -207,6 +240,7 @@ sops -d stores/<tienda>/secrets.sops.yaml
 - `horustech.portWebapi`: Puerto WebAPI
 - `horustech.portWorkers`: Puerto Workers
 - `horustech.tanksIp`: IP para tanques (opcional)
+- `config.horustechIp`: IP principal (alternativa)
 
 ### Cloudflared
 
