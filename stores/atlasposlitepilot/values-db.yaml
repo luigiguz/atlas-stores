@@ -1,5 +1,5 @@
 # Configuración específica para PostgreSQL
-# Tienda: aspdemoshorustech
+# Tienda: atlasposlitepilot
 # Este archivo se usa con el chart poslite-db
 
 postgresql:
@@ -10,7 +10,7 @@ postgresql:
   shmSize: "128mb"
 
 pgadmin:
-  enabled: false
+  enabled: true
   defaultEmail: admin@admin.com
   defaultPassword: ""  # Se debe proporcionar vía Secret
 
