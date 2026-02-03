@@ -4,7 +4,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "tienda-horustech-ejemplo"
+      store: "poslite-testing"
   helm:
     chart: poslite-db
     repo: oci://atlashelmrepo.azurecr.io/helm
@@ -26,7 +26,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "tienda-horustech-ejemplo"
+      store: "poslite-testing"
   helm:
     chart: poslite-cloudflared-horustech
     repo: oci://atlashelmrepo.azurecr.io/helm
@@ -38,28 +38,28 @@ targetCustomizations:
         tunnelId: ""
         credentialsFile: ""
         ingress:
-          - hostname: tienda-horustech-ejemplo-9010.asptienda.com
+          - hostname: poslite-testing-9010.asptienda.com
             service: http://localhost:9010
-          - hostname: tienda-horustech-ejemplo-9012.asptienda.com
+          - hostname: poslite-testing-9012.asptienda.com
             service: http://localhost:9012
-          - hostname: tienda-horustech-ejemplo-9014.asptienda.com
+          - hostname: poslite-testing-9014.asptienda.com
             service: http://localhost:9014
-          - hostname: tienda-horustech-ejemplo-9015.asptienda.com
+          - hostname: poslite-testing-9015.asptienda.com
             service: http://localhost:9015
-          - hostname: tienda-horustech-ejemplo-9020.asptienda.com
+          - hostname: poslite-testing-9020.asptienda.com
             service: http://localhost:9020
-          - hostname: tienda-horustech-ejemplo-9021.asptienda.com
+          - hostname: poslite-testing-9021.asptienda.com
             service: http://localhost:9021
-          - hostname: tienda-horustech-ejemplo-5050.asptienda.com
+          - hostname: poslite-testing-5050.asptienda.com
             service: http://localhost:5050
-          - hostname: tienda-horustech-ejemplo-5432.asptienda.com
+          - hostname: poslite-testing-5432.asptienda.com
             service: tcp://localhost:5432
           - service: http_status:404
 - name: horustech
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "tienda-horustech-ejemplo"
+      store: "poslite-testing"
   helm:
     chart: poslite-horustech
     repo: oci://atlashelmrepo.azurecr.io/helm
