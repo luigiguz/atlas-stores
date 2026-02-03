@@ -1,6 +1,6 @@
 defaultNamespace: poslite
 targetCustomizations:
-- name: horustech
+- name: horus
   clusterSelector:
     matchLabels:
       atlas: "true"

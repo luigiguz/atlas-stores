@@ -13,7 +13,7 @@ stores/
     │   └── fleet.yaml            # chart poslite-db
     ├── cloudflared-<tipo>/       # cloudflared-core, cloudflared-horustech o cloudflared-pam
     │   └── fleet.yaml
-    └── <pos>/                    # core, horustech o pam (según tipo de tienda)
+    └── <pos>/                    # core, horus (Horustech) o pam (según tipo de tienda)
         └── fleet.yaml
 ```
 
@@ -24,7 +24,7 @@ Cada `fleet.yaml` tiene **un solo chart** y el mismo `clusterSelector` (`atlas: 
 | Tipo | Subcarpetas (charts) | Labels del cluster |
 |------|----------------------|--------------------|
 | **Solo Core** | `db/`, `core/`, `cloudflared-core/` | `atlas: "true"`, `store: "<nombre-tienda>"` |
-| **Horustech** | `db/`, `cloudflared-horustech/`, `horustech/` | `atlas: "true"`, `store: "<nombre-tienda>"` |
+| **Horustech** | `db/`, `cloudflared-horustech/`, `horus/` | `atlas: "true"`, `store: "<nombre-tienda>"` |
 | **PAM** | `db/`, `cloudflared-pam/`, `pam/` | `atlas: "true"`, `store: "<nombre-tienda>"` |
 
 PAM y Horustech **no desplegan poslite-core** (solo db + cloudflared-xxx + pam/horustech).
@@ -37,10 +37,12 @@ PAM y Horustech **no desplegan poslite-core** (solo db + cloudflared-xxx + pam/h
 stores/posdemos/
 ├── db/fleet.yaml
 ├── cloudflared-horustech/fleet.yaml
-└── horustech/fleet.yaml
+└── horus/fleet.yaml
 ```
 
-Fleet crea 3 bundles: `stores/posdemos/db`, `stores/posdemos/cloudflared-horustech`, `stores/posdemos/horustech`. Los tres se aplican al cluster con label `store: "posdemos"`.
+La carpeta del chart poslite-horustech se llama **horus** (no horustech) para que los nombres de recursos no superen el límite de 63 caracteres de Kubernetes.
+
+Fleet crea 3 bundles: `stores/posdemos/db`, `stores/posdemos/cloudflared-horustech`, `stores/posdemos/horus`. Los tres se aplican al cluster con label `store: "posdemos"`.
 
 ## Uso
 
