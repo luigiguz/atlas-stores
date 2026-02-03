@@ -2,14 +2,14 @@
 # Este archivo se usa con el chart poslite-core
 
 # Configuración de imágenes
-imageTag: stable  # stable, latest, unstable
+imageTag: unstable  # stable, latest, unstable
 
-# Portal (hostPort: 10014)
+# Portal
 portal:
   enabled: true
   replicas: 1
 
-# WebAPI (hostPort: 10012)
+# WebAPI
 webapi:
   enabled: true
   replicas: 1

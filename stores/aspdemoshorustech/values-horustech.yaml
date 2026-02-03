@@ -2,7 +2,7 @@
 # Este archivo se usa con el chart poslite-horustech
 
 # Configuración de imágenes
-imageTag: stable  # stable, latest, unstable
+imageTag: unstable  # stable, latest, unstable
 
 # Guard API
 guardApi:
@@ -39,9 +39,9 @@ config:
   coreApiKey: "TEST"
   horustechApiKey: "TEST"
   ierpUrl: "http://ierpgateway.azurewebsites.net/"
-  horustechIp: ""  # IP principal del sistema Horustech
-  horustechPortWebapi: ""  # Puerto WebAPI
-  horustechPortWorkers: ""  # Puerto Workers
+  horustechIp: "192.168.10.92"  # IP principal del sistema Horustech
+  horustechPortWebapi: "857"  # Puerto WebAPI
+  horustechPortWorkers: "1771"  # Puerto Workers
   horustechTanksIp: ""  # IP para tanques (opcional)
   horustechTlsPort: 10002
 

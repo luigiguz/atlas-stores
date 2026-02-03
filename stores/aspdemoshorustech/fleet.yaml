@@ -1,20 +1,20 @@
-# Bundle específico para la tienda: <nombre-tienda>
+# Bundle específico para la tienda: aspdemoshorustech
 # Configuración: HORUSTECH + CORE
-# Este bundle se despliega automáticamente cuando el cluster tiene el label store: "<nombre-tienda>"
+# Este bundle se despliega automáticamente cuando el cluster tiene el label store: "aspdemoshorustech"
 #
 # INSTRUCCIONES:
-# 1. Reemplazar todas las ocurrencias de "<nombre-tienda>" con el nombre real de la tienda
+# 1. Reemplazar todas las ocurrencias de "aspdemoshorustech" con el nombre real de la tienda
 # 2. Este ejemplo incluye Horustech, Core, BD y Cloudflared
 # 3. El cluster debe tener el label: poslite: "horustech"
 
 defaultNamespace: poslite
 
 targetCustomizations:
-- name: <nombre-tienda>-db
+- name: aspdemoshorustech-db
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "<nombre-tienda>"
+      store: "aspdemoshorustech"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
@@ -26,11 +26,11 @@ targetCustomizations:
       persistence:
         storageClass: local-path
 
-- name: <nombre-tienda>-core
+- name: aspdemoshorustech-core
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "<nombre-tienda>"
+      store: "aspdemoshorustech"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-core
     version: 1.0.0
@@ -43,11 +43,11 @@ targetCustomizations:
       webapi:
         enabled: true
 
-- name: <nombre-tienda>-horustech
+- name: aspdemoshorustech-horustech
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "<nombre-tienda>"
+      store: "aspdemoshorustech"
       poslite: "horustech"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-horustech
@@ -56,11 +56,11 @@ targetCustomizations:
       - values-common.yaml
       - values-horustech.yaml
 
-- name: <nombre-tienda>-cloudflared
+- name: aspdemoshorustech-cloudflared
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "<nombre-tienda>"
+      store: "aspdemoshorustech"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared
     version: 1.0.0

@@ -6,7 +6,7 @@ global:
   companyId: 1
   imageRegistry: aspposlite.azurecr.io
   imageRepository: asptg.com/ierpposlite
-  imageTag: stable  # stable, latest, unstable
+  imageTag: unstable  # stable, latest, unstable
 
 # Configuración de recursos compartidos
 resources:
