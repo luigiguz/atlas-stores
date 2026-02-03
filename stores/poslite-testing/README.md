@@ -7,8 +7,7 @@ Plantilla para una tienda que despliega **Horustech** (stack autosuficiente: por
 - `atlas: "true"`
 - `store: "<id-tienda>"` (obligatorio, ej: `tienda-horustech-ejemplo`)
 
-Fleet desplegará: **poslite-db**, **poslite-cloudflared-horustech**, **poslite-horustech**. No se despliega poslite-core.
-
+Fleet desplegará: **poslite-db**, **poslite-cloudflared-horustech**, **poslite-horustech**.
 ## Archivos de valores
 
 - **values-db.yaml**: overrides para PostgreSQL/PgAdmin.

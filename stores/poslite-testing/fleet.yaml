@@ -6,8 +6,7 @@ targetCustomizations:
       atlas: "true"
       store: "poslite-testing"
   helm:
-    chart: poslite-db
-    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
     values:
       postgresql:
@@ -22,14 +21,14 @@ targetCustomizations:
       pgadmin:
         enabled: true
         defaultEmail: admin@admin.com
+
 - name: cloudflared-horustech
   clusterSelector:
     matchLabels:
       atlas: "true"
       store: "poslite-testing"
   helm:
-    chart: poslite-cloudflared-horustech
-    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared-horustech
     version: 1.0.0
     values:
       replicas: 1
@@ -55,14 +54,14 @@ targetCustomizations:
           - hostname: poslite-testing-5432.asptienda.com
             service: tcp://localhost:5432
           - service: http_status:404
+
 - name: horustech
   clusterSelector:
     matchLabels:
       atlas: "true"
       store: "poslite-testing"
   helm:
-    chart: poslite-horustech
-    repo: oci://atlashelmrepo.azurecr.io/helm
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-horustech
     version: 1.0.0
     values:
       guardApi:
