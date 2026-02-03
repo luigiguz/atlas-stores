@@ -1,396 +1,151 @@
-# Atlas Stores - Configuración por Tienda
+# Atlas Stores
 
-Este repositorio contiene la configuración específica de cada tienda para el despliegue con Fleet. Cada tienda tiene su propio bundle de Fleet que se despliega automáticamente según los labels del cluster.
+Configuración **por tienda** para desplegar **PosLite** en clusters RKE2 con **Fleet** (Rancher). Este repositorio no contiene código de aplicación: solo YAML que Fleet lee desde Git y aplica en cada cluster según el nombre de la tienda.
 
-## Estructura
+---
+
+## Nueva estructura del repositorio
+
+El modelo es **una tienda = una carpeta** dentro de `stores/`. No hay grupos ni plantillas globales: todo el despliegue se define por tienda.
 
 ```
 atlas-stores/
-├── stores/
-│   ├── <nombre-tienda>/
-│   │   ├── fleet.yaml              # Bundle de Fleet para esta tienda
-│   │   ├── values-common.yaml      # Configuración común
-│   │   ├── values-db.yaml          # Configuración de base de datos
-│   │   ├── values-core.yaml        # Configuración Core
-│   │   ├── values-pam.yaml         # Configuración PAM (si aplica)
-│   │   ├── values-horustech.yaml   # Configuración Horustech (si aplica)
-│   │   └── secrets.yaml            # Secretos (puede usar SOPS opcionalmente)
-│   └── ejemplo-tienda-*/           # Templates específicos por tipo
-│       ├── ejemplo-tienda-core/    # Solo Core + BD + Cloudflared
-│       ├── ejemplo-tienda-horustech/  # Horustech + Core + BD + Cloudflared
-│       ├── ejemplo-tienda-pam/     # PAM + Core + BD + Cloudflared
-│       └── ejemplo-tienda/         # Template completo (todos los tipos)
-└── groups/
-    ├── core/                       # Template genérico para Core
-    ├── horustech/                  # Template genérico para Horustech
-    └── pam/                        # Template genérico para PAM
+├── README.md
+├── doc/                              # Documentación técnica
+│   ├── ESTRUCTURA-COMPLETA.md
+│   ├── FUNCIONAMIENTO-SISTEMA.md
+│   ├── GESTION-TIENDA-INDIVIDUAL.md
+│   ├── CONFIGURACION-RANCHER.md
+│   ├── HELM-REPOSITORY-SETUP.md
+│   ├── CONFIGURAR-AUTENTICACION-ACR.md
+│   ├── VERIFICAR-DESPLIEGUE.md
+│   ├── MIGRACION-GUIDE.md
+│   └── ATLAS-RKE2-MIGRACION.md
+│
+└── stores/                           # Una carpeta por tienda
+    │
+    ├── atlasposlitepilot/             # Tienda real (piloto)
+    │   ├── fleet.yaml                 # Qué charts y con qué valores
+    │   ├── values-common.yaml         # Común: registry, timezone, recursos
+    │   ├── values-db.yaml             # PostgreSQL
+    │   ├── values-core.yaml           # Core (Portal, WebAPI)
+    │   ├── values-horustech.yaml      # Horustech (esta tienda es tipo Horustech)
+    │   └── secrets.yaml               # Secretos (BD, ACR, Cloudflared, etc.)
+    │
+    ├── ejemplo-tienda-core/          # Plantilla: solo Core + BD + Cloudflared
+    ├── ejemplo-tienda-horustech/      # Plantilla: Horustech + Core + BD + Cloudflared
+    └── ejemplo-tienda-pam/            # Plantilla: PAM + Core + BD + Cloudflared
 ```
 
-## Ejemplos de Tiendas Disponibles
-
-Este repositorio incluye ejemplos específicos para cada tipo de configuración:
-
-### 1. `ejemplo-tienda-core/` - Solo Core
-**Configuración:** Core + BD + Cloudflared (sin Horustech ni PAM)
-
-**Contenido:**
-- `fleet.yaml` - Bundle con solo Core, BD y Cloudflared
-- `values-common.yaml` - Valores comunes
-- `values-db.yaml` - Configuración PostgreSQL
-- `values-core.yaml` - Configuración Core
-- `secrets.sops.yaml.example` - Template de secretos
-
-**Labels del cluster requeridos:**
-```yaml
-atlas: "true"
-store: "<nombre-tienda>"
-poslite: "core"  # Opcional, pero recomendado
-```
-
-### 2. `ejemplo-tienda-horustech/` - Horustech + Core
-**Configuración:** Horustech + Core + BD + Cloudflared
-
-**Contenido:**
-- `fleet.yaml` - Bundle con Horustech, Core, BD y Cloudflared
-- `values-common.yaml` - Valores comunes
-- `values-db.yaml` - Configuración PostgreSQL
-- `values-core.yaml` - Configuración Core
-- `values-horustech.yaml` - Configuración Horustech
-- `secrets.sops.yaml.example` - Template de secretos
-
-**Labels del cluster requeridos:**
-```yaml
-atlas: "true"
-store: "<nombre-tienda>"
-poslite: "horustech"
-```
-
-### 3. `ejemplo-tienda-pam/` - PAM + Core
-**Configuración:** PAM + Core + BD + Cloudflared
-
-**Contenido:**
-- `fleet.yaml` - Bundle con PAM, Core, BD y Cloudflared
-- `values-common.yaml` - Valores comunes
-- `values-db.yaml` - Configuración PostgreSQL
-- `values-core.yaml` - Configuración Core
-- `values-pam.yaml` - Configuración PAM
-- `secrets.sops.yaml.example` - Template de secretos
-
-**Labels del cluster requeridos:**
-```yaml
-atlas: "true"
-store: "<nombre-tienda>"
-poslite: "pam"
-```
+### Qué hay dentro de cada tienda
 
-### 4. `ejemplo-tienda/` - Template Completo
-**Configuración:** Template con todos los tipos (requiere edición)
+| Archivo | Uso |
+|--------|-----|
+| **fleet.yaml** | Define los bundles de Fleet: qué Helm charts se instalan y qué archivos de valores usan. El `clusterSelector` usa el label `store: "<nombre-tienda>"`. |
+| **values-common.yaml** | Valores compartidos: registry de imágenes, timezone, recursos, `storageClass`. |
+| **values-db.yaml** | Configuración de PostgreSQL. |
+| **values-core.yaml** | Configuración de Core (Portal, WebAPI). |
+| **values-horustech.yaml** o **values-pam.yaml** | Solo si la tienda es Horustech o PAM. Configuración específica del POS. |
+| **secrets.yaml** | Secretos: contraseñas BD, cadena de conexión, ACR, Cloudflared, SMTP. Opcional: SOPS en `secrets.sops.yaml`. |
 
-**Contenido:**
-- `fleet.yaml` - Bundle con todos los charts (Core, Horustech, PAM, BD, Cloudflared)
-- Todos los archivos `values-*.yaml`
-- Requiere eliminar secciones no necesarias según el tipo de tienda
+Las carpetas `ejemplo-tienda-*` son **plantillas para copiar**. No se despliegan: sirven para crear una nueva carpeta con el mismo esquema (sustituyendo `<nombre-tienda>` por el nombre real).
 
-## Crear Configuración para una Nueva Tienda
+---
 
-### Opción 1: Usar Ejemplo Específico (Recomendado)
+## Cómo funciona el despliegue
 
-**Para tienda solo Core:**
-```bash
-mkdir -p stores/<nombre-tienda>
-cp -r stores/ejemplo-tienda-core/* stores/<nombre-tienda>/
-```
+1. **Fleet** tiene registrado este repositorio Git (por ejemplo en Rancher).
+2. Fleet **descubre** cada `stores/<nombre-tienda>/fleet.yaml`.
+3. Para cada **cluster** registrado, Fleet mira sus **labels**.
+4. Si el cluster tiene el label **`store: "<nombre-tienda>"`** (y `atlas: "true"`), Fleet aplica el bundle de esa carpeta.
+5. Cada bundle indica qué **charts** instalar (desde el registry OCI) y qué **valuesFiles** usar (los YAML de esa misma carpeta).
 
-**Para tienda Horustech + Core:**
-```bash
-mkdir -p stores/<nombre-tienda>
-cp -r stores/ejemplo-tienda-horustech/* stores/<nombre-tienda>/
-```
+Resultado: **un cluster = una tienda = una carpeta en `stores/`**. No hay despliegues “por tipo” separados; todo va por nombre de tienda.
 
-**Para tienda PAM + Core:**
-```bash
-mkdir -p stores/<nombre-tienda>
-cp -r stores/ejemplo-tienda-pam/* stores/<nombre-tienda>/
-```
+---
 
-### Opción 2: Usar Template Completo
+## Tipos de tienda
 
-```bash
-# Crear directorio de la tienda
-mkdir -p stores/<nombre-tienda>
+Hay tres variantes según el sistema POS. La carpeta de la tienda incluye los charts y values que correspondan.
 
-# Copiar todos los archivos del template
-cp -r stores/ejemplo-tienda/* stores/<nombre-tienda>/
+| Tipo | Charts desplegados | Carpeta plantilla | Label extra en cluster |
+|------|--------------------|-------------------|------------------------|
+| **Solo Core** | BD, Core, Cloudflared | `ejemplo-tienda-core/` | — |
+| **Horustech** | BD, Core, Horustech, Cloudflared | `ejemplo-tienda-horustech/` | `poslite: "horustech"` |
+| **PAM** | BD, Core, PAM, Cloudflared | `ejemplo-tienda-pam/` | `poslite: "pam"` |
 
-# O copiar archivos individuales
-cp stores/ejemplo-tienda/fleet.yaml stores/<nombre-tienda>/
-cp stores/ejemplo-tienda/values-*.yaml stores/<nombre-tienda>/
-cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<nombre-tienda>/secrets.yaml
-```
+El label **`store: "<nombre-tienda>"`** es obligatorio y debe coincidir con el nombre de la carpeta en `stores/`.
 
-### 3. Editar fleet.yaml
+---
 
-Editar `stores/<nombre-tienda>/fleet.yaml` y reemplazar todas las ocurrencias de `<nombre-tienda>` con el nombre real de la tienda:
+## Cómo crear una nueva tienda
 
-```bash
-# Reemplazar en el archivo (Linux/macOS)
-sed -i 's/<nombre-tienda>/<nombre-real>/g' stores/<nombre-tienda>/fleet.yaml
+1. **Copiar la plantilla** según el tipo (Core, Horustech o PAM):
+   ```bash
+   mkdir -p stores/<nombre-tienda>
+   cp -r stores/ejemplo-tienda-horustech/* stores/<nombre-tienda>/
+   ```
 
-# O en Windows PowerShell
-(Get-Content stores/<nombre-tienda>/fleet.yaml) -replace '<nombre-tienda>', '<nombre-real>' | Set-Content stores/<nombre-tienda>/fleet.yaml
-```
+2. **Sustituir `<nombre-tienda>`** por el nombre real en `stores/<nombre-tienda>/fleet.yaml` (en `store: "..."`, en `name: ...-db`, `name: ...-core`, etc.). En PowerShell:
+   ```powershell
+   (Get-Content stores/<nombre-tienda>/fleet.yaml) -replace '<nombre-tienda>', '<nombre-real>' | Set-Content stores/<nombre-tienda>/fleet.yaml
+   ```
 
-**Reemplazos necesarios:**
-- `store: "<nombre-tienda>"` → `store: "<nombre-real>"`
-- `name: <nombre-tienda>-db` → `name: <nombre-real>-db`
-- `name: <nombre-tienda>-core` → `name: <nombre-real>-core`
-- Y así para todos los bundles
+3. **Editar los values** de esa carpeta: `values-common.yaml`, `values-db.yaml`, `values-core.yaml` y, si aplica, `values-horustech.yaml` o `values-pam.yaml`.
 
-**Nota:** Si usaste un ejemplo específico (`ejemplo-tienda-core`, `ejemplo-tienda-horustech`, o `ejemplo-tienda-pam`), el `fleet.yaml` ya está configurado correctamente y solo necesitas reemplazar el nombre. No necesitas eliminar secciones.
+4. **Configurar secretos**: renombrar o copiar `secrets.sops.yaml.example` a `secrets.yaml` y rellenar con los valores reales (BD, ACR, Cloudflared, etc.).
 
-### 4. Editar valores
+5. **Etiquetar el cluster** en Rancher con `atlas: "true"` y `store: "<nombre-tienda>"` (y `poslite: "horustech"` o `poslite: "pam"` si aplica).
 
-Editar los archivos `values-*.yaml` con la configuración específica de la tienda:
+6. **Commit y push** de la carpeta `stores/<nombre-tienda>/`. Fleet aplicará el bundle en el cluster que tenga ese `store`.
 
-- `values-common.yaml`: Configuración común (registry, timezone, recursos, etc.)
-- `values-db.yaml`: Configuración de PostgreSQL
-- `values-core.yaml`: Configuración de Core (Portal y WebAPI)
-- `values-horustech.yaml` o `values-pam.yaml`: Configuración específica del sistema POS (si aplica)
+---
 
-### 5. Crear secretos
+## Secretos
 
-**Opción A: Sin encriptación (Recomendado para empezar)**
+- **secrets.yaml** (sin encriptar): Fleet lo usa directamente. Adecuado si el repo es privado.
+- **secrets.sops.yaml** (con SOPS): Fleet no desencripta SOPS; hace falta otro mecanismo (Sealed Secrets, External Secrets o desencriptar antes).
 
-```bash
-# Copiar template
-cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<nombre-tienda>/secrets.yaml
+Los ejemplos usan `secrets.sops.yaml.example` como plantilla; al crear la tienda se copia/renombra a `secrets.yaml` y se rellenan los valores.
 
-# Editar secretos directamente
-vim stores/<nombre-tienda>/secrets.yaml
+---
 
-# ¡Listo! Fleet leerá el archivo directamente
-```
+## Variables de referencia
 
-**Opción B: Con SOPS (Opcional - solo si necesitas encriptación)**
+- **BD:** `postgresql.password`, `postgresql.user`, `postgresql.database`, `db-connection-string`
+- **Core:** `portal.enabled`, `webapi.enabled`, `config.coreApiKey`, `config.ierpUrl`
+- **Horustech:** `horustech.ip`, `config.horustechIp`, puertos WebAPI/Workers
+- **PAM:** `pam.ip`, `pam.password`, `config.pamIp`
+- **Cloudflared:** `cloudflared.tunnel-id`, `cloudflared.credentials` (JSON)
 
-```bash
-# Copiar template
-cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<nombre-tienda>/secrets.sops.yaml
+El orden de precedencia de valores es: defaults del chart → valores inline en `fleet.yaml` → archivos en `valuesFiles`.
 
-# Editar secretos (se desencripta automáticamente)
-sops stores/<nombre-tienda>/secrets.sops.yaml
+---
 
-# Guardar (se encripta automáticamente)
-```
+## Documentación en `doc/`
 
-**Nota:** Fleet NO desencripta SOPS automáticamente. Si usas SOPS, necesitarás desencriptar manualmente o usar Sealed Secrets/External Secrets Operator.
+| Archivo | Contenido |
+|---------|-----------|
+| ESTRUCTURA-COMPLETA.md | Charts, matriz de puertos, estado de migración |
+| FUNCIONAMIENTO-SISTEMA.md | Arquitectura, Fleet, Helm, flujo GitOps |
+| GESTION-TIENDA-INDIVIDUAL.md | Actualizar o instalar una sola tienda |
+| CONFIGURACION-RANCHER.md | Configuración en Rancher |
+| HELM-REPOSITORY-SETUP.md | Repositorio Helm OCI |
+| CONFIGURAR-AUTENTICACION-ACR.md | Autenticación Azure Container Registry |
+| VERIFICAR-DESPLIEGUE.md | Comprobar que el despliegue es correcto |
+| MIGRACION-GUIDE.md | Migración Docker Compose → RKE2 |
+| ATLAS-RKE2-MIGRACION.md | Especificaciones de migración RKE2 |
 
-### 6. Aplicar labels al cluster
+---
 
-En Rancher, aplicar los siguientes labels al cluster:
+## Problemas frecuentes
 
-```yaml
-atlas: "true"
-store: "<nombre-tienda>"
-poslite: "horustech"  # o "pam" o "core"
-```
+- **Fleet no aplica:** Comprobar que el repo esté registrado, que el cluster tenga `atlas: "true"` y `store: "<nombre-tienda>"`, y revisar logs: `kubectl logs -n fleet-system -l app=fleet-controller`.
+- **Secretos no se aplican:** Verificar que exista `secrets.yaml` en la carpeta de la tienda y que el YAML sea válido.
+- **Valores no se aplican:** Revisar que los paths en `valuesFiles` sean relativos al `fleet.yaml` y que los archivos existan en esa carpeta.
 
-**Cómo aplicar labels en Rancher:**
-1. Ve al cluster
-2. Click en **"⋮" (menú)** → **"Edit Config"**
-3. En la sección **"Labels"**, agrega los labels arriba
-4. Guardar
+Para más detalle: `kubectl get bundles.fleet.cattle.io -n fleet-default` y `kubectl describe bundle.fleet.cattle.io <nombre-bundle> -n fleet-default`.
 
-### 7. Commit y Push
+---
 
-```bash
-git add stores/<nombre-tienda>/
-git commit -m "Agregar nueva tienda: <nombre-tienda>"
-git push
-```
-
-Fleet detectará automáticamente el nuevo bundle y lo desplegará en el cluster con los labels correspondientes.
-
-## Gestión de Secretos
-
-### Opción 1: Archivos YAML sin Encriptar (Recomendado)
-
-Fleet puede leer archivos `secrets.yaml` directamente sin necesidad de encriptación:
-
-```bash
-# Crear archivo de secretos
-cp stores/ejemplo-tienda/secrets.sops.yaml.example stores/<tienda>/secrets.yaml
-
-# Editar directamente
-vim stores/<tienda>/secrets.yaml
-
-# Commit y push - Fleet lo aplicará automáticamente
-git add stores/<tienda>/secrets.yaml
-git commit -m "Agregar secretos para tienda"
-git push
-```
-
-**Ventajas:**
-- ✅ Simple y directo
-- ✅ Fleet lo maneja automáticamente
-- ✅ No requiere configuración adicional
-
-**Desventajas:**
-- ⚠️ Secretos visibles en el repositorio Git
-- ⚠️ Cualquiera con acceso al repo puede verlos
-
-### Opción 2: SOPS (Opcional - Solo si necesitas encriptación)
-
-Si necesitas encriptar los secretos en Git, puedes usar SOPS:
-
-#### Instalación de SOPS
-
-```bash
-# Linux
-wget https://github.com/mozilla/sops/releases/download/v3.8.0/sops-v3.8.0.linux
-sudo mv sops-v3.8.0.linux /usr/local/bin/sops
-sudo chmod +x /usr/local/bin/sops
-
-# macOS
-brew install sops
-```
-
-#### Configuración de SOPS
-
-Crear archivo `.sops.yaml` en la raíz del repositorio:
-
-```yaml
-creation_rules:
-  - path_regex: stores/.*/secrets\.sops\.yaml$
-    pgp: >-
-      FINGERPRINT_DE_LA_CLAVE_PGP
-```
-
-#### Uso de SOPS
-
-```bash
-# Editar archivo encriptado
-sops stores/<tienda>/secrets.sops.yaml
-
-# Encriptar archivo
-sops -e -i stores/<tienda>/secrets.sops.yaml
-
-# Desencriptar para ver contenido
-sops -d stores/<tienda>/secrets.sops.yaml
-```
-
-**⚠️ Importante:** Fleet NO desencripta SOPS automáticamente. Si usas SOPS, necesitarás:
-- Desencriptar manualmente antes de aplicar, O
-- Usar Sealed Secrets Operator, O
-- Usar External Secrets Operator
-
-**Recomendación:** Para empezar, usa archivos `secrets.yaml` sin encriptar. Puedes migrar a SOPS más adelante si es necesario.
-
-## Variables Importantes
-
-### Base de Datos
-
-- `postgresql.password`: Contraseña de PostgreSQL
-- `postgresql.user`: Usuario de PostgreSQL (por defecto: `sa`)
-- `postgresql.database`: Nombre de la base de datos (por defecto: `poslite`)
-- `db-connection-string`: Cadena de conexión completa
-
-### Core
-
-- `portal.enabled`: Habilitar Portal (hostPort: 10014)
-- `webapi.enabled`: Habilitar WebAPI (hostPort: 10012)
-- `config.coreApiKey`: API Key para Core
-- `config.ierpUrl`: URL del gateway iERP
-
-### PAM
-
-- `pam.password`: Contraseña de acceso al sistema PAM
-- `pam.ip`: IP del sistema PAM
-- `config.pamIp`: IP del sistema PAM (alternativa)
-
-### Horustech
-
-- `horustech.ip`: IP principal del sistema Horustech
-- `horustech.portWebapi`: Puerto WebAPI
-- `horustech.portWorkers`: Puerto Workers
-- `horustech.tanksIp`: IP para tanques (opcional)
-- `config.horustechIp`: IP principal (alternativa)
-
-### Cloudflared
-
-- `cloudflared.tunnel-id`: ID del tunnel de Cloudflare
-- `cloudflared.credentials`: Credenciales del tunnel (JSON)
-
-## Integración con Fleet
-
-Fleet leerá automáticamente los archivos de este repositorio y aplicará la configuración según los labels de los clusters.
-
-### Cómo Funciona
-
-1. **Cada tienda tiene su propio bundle**: `stores/<tienda>/fleet.yaml`
-2. **Fleet detecta automáticamente** los bundles en subdirectorios
-3. **Los bundles se despliegan** cuando el cluster tiene el label `store: "<tienda>"`
-4. **Los valores se cargan** desde archivos relativos en el mismo directorio
-
-### Orden de Precedencia
-
-1. Valores del chart (defaults)
-2. Valores del bundle en `stores/<tienda>/fleet.yaml` (valores inline)
-3. Valores de `valuesFiles` en el bundle (archivos YAML de la tienda)
-
-## Mejores Prácticas
-
-1. **Gestionar secretos según tu necesidad**
-   - Si el repositorio es privado y confías en el equipo: usar `secrets.yaml` sin encriptar
-   - Si necesitas encriptación: usar SOPS o Sealed Secrets
-
-2. **Usar valores por defecto cuando sea posible**
-   - Solo sobrescribir valores que sean específicos de la tienda
-
-3. **Documentar cambios importantes**
-   - Comentar en commits cuando se cambian configuraciones críticas
-
-4. **Validar antes de mergear**
-   - Verificar que los valores YAML sean válidos
-   - Si usas SOPS, verificar que los secretos estén encriptados
-
-5. **Usar branches para cambios grandes**
-   - Crear branches para cambios que afecten múltiples tiendas
-
-## Troubleshooting
-
-### Problema: Fleet no aplica cambios
-
-**Solución**:
-1. Verificar que el repositorio esté registrado en Rancher
-2. Verificar que los labels del cluster sean correctos (`atlas: "true"`, `store: "<tienda>"`)
-3. Verificar logs de Fleet: `kubectl logs -n fleet-system -l app=fleet-controller`
-4. Verificar bundles: `kubectl get bundles.fleet.cattle.io -n fleet-default`
-
-### Problema: Secretos no se aplican
-
-**Solución**:
-1. Verificar que el archivo `secrets.yaml` exista en la carpeta de la tienda
-2. Verificar que el archivo tenga sintaxis YAML válida
-3. Verificar que Fleet tenga permisos para leer el Secret
-4. Si usas SOPS: verificar que el archivo esté desencriptado o que uses Sealed Secrets
-
-### Problema: Valores no se aplican correctamente
-
-**Solución**:
-1. Verificar orden de precedencia
-2. Verificar sintaxis YAML
-3. Verificar que los paths en `valuesFiles` sean relativos al `fleet.yaml`
-4. Verificar que los archivos de valores existan en el directorio de la tienda
-
-### Problema: Bundle no se despliega
-
-**Solución**:
-1. Verificar que el `fleet.yaml` esté en `stores/<tienda>/fleet.yaml`
-2. Verificar que el cluster tenga el label `store: "<tienda>"`
-3. Verificar que el `clusterSelector` en el bundle coincida con los labels del cluster
-4. Ver logs: `kubectl describe bundle.fleet.cattle.io <nombre-bundle> -n fleet-default`
-
-## Contacto
-
-Para problemas o consultas, contactar al equipo de DevOps.
+Contacto: equipo de DevOps.
