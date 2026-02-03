@@ -1,0 +1,36 @@
+defaultNamespace: poslite
+targetCustomizations:
+- name: horustech
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "posdemos"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-horustech
+    version: 1.0.0
+    values:
+      guardApi:
+        enabled: true
+      portal:
+        enabled: true
+      webapi:
+        enabled: true
+      coreWebapi:
+        enabled: true
+      coreWebevents:
+        enabled: true
+      coreLoyaltyConfigWorker:
+        enabled: true
+      workers:
+        price:
+          enabled: true
+        shift:
+          enabled: true
+        errorReports:
+          enabled: true
+        dispatches:
+          enabled: true
+        tanks:
+          enabled: true
+        ierp:
+          enabled: true

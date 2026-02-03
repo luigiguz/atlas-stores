@@ -1,0 +1,34 @@
+defaultNamespace: poslite
+targetCustomizations:
+- name: cloudflared-horustech
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "posdemos"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared-horustech
+    version: 1.0.0
+    values:
+      replicas: 1
+      hostNetwork: true
+      config:
+        tunnelId: ""
+        credentialsFile: ""
+        ingress:
+          - hostname: posdemos-9010.asptienda.com
+            service: http://localhost:9010
+          - hostname: posdemos-9012.asptienda.com
+            service: http://localhost:9012
+          - hostname: posdemos-9014.asptienda.com
+            service: http://localhost:9014
+          - hostname: posdemos-9015.asptienda.com
+            service: http://localhost:9015
+          - hostname: posdemos-9020.asptienda.com
+            service: http://localhost:9020
+          - hostname: posdemos-9021.asptienda.com
+            service: http://localhost:9021
+          - hostname: posdemos-5050.asptienda.com
+            service: http://localhost:5050
+          - hostname: posdemos-5432.asptienda.com
+            service: tcp://localhost:5432
+          - service: http_status:404

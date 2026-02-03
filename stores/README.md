@@ -1,37 +1,55 @@
-# Plantillas de tienda para atlas-stores (opción A: un bundle por tienda)
+# Plantillas de tienda para atlas-stores (un bundle por chart)
 
-Cada subcarpeta es **una tienda** con su **fleet.yaml** incluido. El label **`store` es obligatorio**: cada cluster debe tener `atlas: "true"` y `store: "<nombre-carpeta>"` para recibir solo el despliegue de esa tienda.
+Cada **tienda** es una carpeta con **una subcarpeta por chart**. Fleet descubre un bundle por cada subcarpeta que tenga `fleet.yaml`, así se despliegan todos los charts de la tienda en el mismo cluster.
 
-## Dónde copiar en atlas-stores
+El label **`store` es obligatorio**: cada cluster debe tener `atlas: "true"` y `store: "<nombre-tienda>"` para recibir el despliegue de esa tienda.
 
-Copia cada carpeta de tienda dentro de:
+## Estructura de una tienda
 
 ```
-atlas-stores/fleet/bundles/stores/
+stores/
+└── <nombre-tienda>/              # ej: posdemos
+    ├── db/
+    │   └── fleet.yaml            # chart poslite-db
+    ├── cloudflared-<tipo>/       # cloudflared-core, cloudflared-horustech o cloudflared-pam
+    │   └── fleet.yaml
+    └── <pos>/                    # core, horustech o pam (según tipo de tienda)
+        └── fleet.yaml
 ```
 
-Ejemplo: al copiar `tienda-pam-ejemplo` obtienes `atlas-stores/fleet/bundles/stores/tienda-pam-ejemplo/fleet.yaml`. Fleet descubre los bundles por esa ruta.
+Cada `fleet.yaml` tiene **un solo chart** y el mismo `clusterSelector` (`atlas: "true"`, `store: "<nombre-tienda>"`). Los valores van **inline** en cada `fleet.yaml`; no se usan archivos `values-*.yaml` separados.
 
 ## Tipos de tienda
 
-| Carpeta | Stack | Charts desplegados | Labels del cluster (obligatorios) |
-|--------|--------|-------------------|------------------------------------|
-| **tienda-core-ejemplo** | Solo Core | db, core, cloudflared-core | `atlas: "true"`, `store: "tienda-core-ejemplo"` |
-| **tienda-pam-ejemplo** | PAM (autosuficiente, sin core) | db, cloudflared-pam, pam | `atlas: "true"`, `store: "tienda-pam-ejemplo"` |
-| **tienda-horustech-ejemplo** | Horustech (autosuficiente, sin core) | db, cloudflared-horustech, horustech | `atlas: "true"`, `store: "tienda-horustech-ejemplo"` |
+| Tipo | Subcarpetas (charts) | Labels del cluster |
+|------|----------------------|--------------------|
+| **Solo Core** | `db/`, `core/`, `cloudflared-core/` | `atlas: "true"`, `store: "<nombre-tienda>"` |
+| **Horustech** | `db/`, `cloudflared-horustech/`, `horustech/` | `atlas: "true"`, `store: "<nombre-tienda>"` |
+| **PAM** | `db/`, `cloudflared-pam/`, `pam/` | `atlas: "true"`, `store: "<nombre-tienda>"` |
 
-PAM y Horustech **no desplegar poslite-core** para evitar duplicar workers (p. ej. ierp).
+PAM y Horustech **no desplegan poslite-core** (solo db + cloudflared-xxx + pam/horustech).
 
-**Hostnames:** `<nombre-tienda>-<puerto>.asptienda.com`. En cada `fleet.yaml` ya vienen con el nombre de la carpeta (ej: `tienda-pam-ejemplo-7012.asptienda.com`). Al renombrar la tienda, actualiza también los hostnames en el `fleet.yaml`.
+**Hostnames:** `<nombre-tienda>-<puerto>.asptienda.com`. En cada `fleet.yaml` de cloudflared hay que actualizar los hostnames al renombrar la tienda.
 
-Cada subcarpeta incluye:
-- **fleet.yaml**: bundle con `clusterSelector` que exige `store`. Core solo para tienda-core; PAM/Horustech solo db + cloudflared-xxx + pam/horustech (sin core).
-- **README.md**, **values-db.yaml**, **values-*.yaml**: referencia; los valores usados por Fleet están ya en `fleet.yaml`.
+## Ejemplo: tienda Horustech (posdemos)
+
+```
+stores/posdemos/
+├── db/fleet.yaml
+├── cloudflared-horustech/fleet.yaml
+└── horustech/fleet.yaml
+```
+
+Fleet crea 3 bundles: `stores/posdemos/db`, `stores/posdemos/cloudflared-horustech`, `stores/posdemos/horustech`. Los tres se aplican al cluster con label `store: "posdemos"`.
 
 ## Uso
 
-1. Asegúrate de que los charts estén publicados en ACR (véase [doc/PUBLICAR-CHARTS-ACR.md](../doc/PUBLICAR-CHARTS-ACR.md)).
-2. Copia la carpeta de la tienda (ej: `tienda-pam-ejemplo`) a `atlas-stores/fleet/bundles/stores/`.
-3. Para una tienda real: renombra la carpeta al ID (ej: `gasparhernandez`) y dentro de `fleet.yaml` sustituye todo `tienda-pam-ejemplo` por `gasparhernandez` (clusterSelector y hostnames).
+1. Asegúrate de que los charts estén publicados en ACR.
+2. Copia la plantilla de tienda (ej: `tienda-horustech-ejemplo`) y renómbrala al ID de la tienda (ej: `posdemos`).
+3. Dentro de cada subcarpeta, en el `fleet.yaml` sustituye el nombre de la plantilla por el nombre de la tienda (`clusterSelector.store` y hostnames en cloudflared).
 4. Ajusta contraseñas/secretos (SOPS/Sealed Secrets); no commitear en claro.
 5. En Rancher, asigna al cluster las labels `atlas: "true"` y `store: <id-tienda>`.
+
+## Por qué una carpeta por chart
+
+Fleet genera **un bundle por cada directorio que contiene un fleet.yaml**. Si en un solo `fleet.yaml` se definen varios charts (`targetCustomizations`), en algunas versiones solo se despliega el primero. Con **una subcarpeta por chart** (cada una con su `fleet.yaml`), Fleet crea un bundle por chart y todos se despliegan en el cluster que coincida con el selector.
