@@ -146,7 +146,7 @@ El orden de precedencia de valores es: defaults del chart → valores inline en 
 
 | Archivo | Contenido |
 |---------|-----------|
-| ESTRUCTURA-COMPLETA.md | Charts, matriz de puertos, estado de migración |
+| ESTRUCTURA-COMPLETA.md | Estructura del repo: directorios, ramas, contenido por tienda |
 | FUNCIONAMIENTO-SISTEMA.md | Arquitectura, Fleet, Helm, flujo GitOps |
 | GESTION-TIENDA-INDIVIDUAL.md | Actualizar o instalar una sola tienda |
 | CONFIGURACION-RANCHER.md | Configuración en Rancher |
