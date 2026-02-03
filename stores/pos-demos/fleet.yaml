@@ -4,7 +4,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "poslite-test"
+      store: "pos-demos"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
@@ -26,7 +26,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "poslite-test"
+      store: "pos-demos"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared-horustech
     version: 1.0.0
@@ -37,21 +37,21 @@ targetCustomizations:
         tunnelId: ""
         credentialsFile: ""
         ingress:
-          - hostname: poslite-test-9010.asptienda.com
+          - hostname: pos-demos-9010.asptienda.com
             service: http://localhost:9010
-          - hostname: poslite-test-9012.asptienda.com
+          - hostname: pos-demos-9012.asptienda.com
             service: http://localhost:9012
-          - hostname: poslite-test-9014.asptienda.com
+          - hostname: pos-demos-9014.asptienda.com
             service: http://localhost:9014
-          - hostname: poslite-test-9015.asptienda.com
+          - hostname: pos-demos-9015.asptienda.com
             service: http://localhost:9015
-          - hostname: poslite-test-9020.asptienda.com
+          - hostname: pos-demos-9020.asptienda.com
             service: http://localhost:9020
-          - hostname: poslite-test-9021.asptienda.com
+          - hostname: pos-demos-9021.asptienda.com
             service: http://localhost:9021
-          - hostname: poslite-test-5050.asptienda.com
+          - hostname: pos-demos-5050.asptienda.com
             service: http://localhost:5050
-          - hostname: poslite-test-5432.asptienda.com
+          - hostname: pos-demos-5432.asptienda.com
             service: tcp://localhost:5432
           - service: http_status:404
 
@@ -59,7 +59,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       atlas: "true"
-      store: "poslite-test"
+      store: "pos-demos"
   helm:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-horustech
     version: 1.0.0
