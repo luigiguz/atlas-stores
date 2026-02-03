@@ -42,7 +42,9 @@ stores/posdemos/
 
 La carpeta del chart poslite-horustech se llama **horus** (no horustech) para que los nombres de recursos no superen el límite de 63 caracteres de Kubernetes.
 
-Fleet crea 3 bundles: `stores/posdemos/db`, `stores/posdemos/cloudflared-horustech`, `stores/posdemos/horus`. Los tres se aplican al cluster con label `store: "posdemos"`.
+Fleet crea 3 bundles: `stores/posdemos/db`, `stores/posdemos/cloudflared-horustech`, `stores/posdemos/horus`.
+
+Opcional: **`stores/posdemos/acr-secret/`** despliega el Secret para pull de imágenes de ACR (`acr-secret` en namespace `poslite`). Sustituye las credenciales en `secret.yaml` antes de commit. Fleet lo aplica automáticamente al hacer push. Los tres se aplican al cluster con label `store: "posdemos"`.
 
 ## Uso
 
