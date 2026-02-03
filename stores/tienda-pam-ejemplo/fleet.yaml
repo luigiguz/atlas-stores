@@ -1,0 +1,100 @@
+defaultNamespace: poslite
+targetCustomizations:
+- name: db
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "tienda-pam-ejemplo"
+  helm:
+    chart: poslite-db
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    version: 1.0.0
+    values:
+      postgresql:
+        timezone: "America/Panama"
+        database: poslite
+        user: sa
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 20Gi
+        accessMode: ReadWriteOnce
+      pgadmin:
+        enabled: true
+        defaultEmail: admin@admin.com
+- name: cloudflared-pam
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "tienda-pam-ejemplo"
+  helm:
+    chart: poslite-cloudflared-pam
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    version: 1.0.0
+    values:
+      replicas: 1
+      hostNetwork: true
+      config:
+        tunnelId: ""
+        credentialsFile: ""
+        ingress:
+          - hostname: tienda-pam-ejemplo-7012.asptienda.com
+            service: http://localhost:7012
+          - hostname: tienda-pam-ejemplo-7014.asptienda.com
+            service: http://localhost:7014
+          - hostname: tienda-pam-ejemplo-7010.asptienda.com
+            service: http://localhost:7010
+          - hostname: tienda-pam-ejemplo-7011.asptienda.com
+            service: http://localhost:7011
+          - hostname: tienda-pam-ejemplo-7015.asptienda.com
+            service: http://localhost:7015
+          - hostname: tienda-pam-ejemplo-7016.asptienda.com
+            service: http://localhost:7016
+          - hostname: tienda-pam-ejemplo-7020.asptienda.com
+            service: http://localhost:7020
+          - hostname: tienda-pam-ejemplo-5050.asptienda.com
+            service: http://localhost:5050
+          - hostname: tienda-pam-ejemplo-5432.asptienda.com
+            service: tcp://localhost:5432
+          - service: http_status:404
+- name: pam
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "tienda-pam-ejemplo"
+  helm:
+    chart: poslite-pam
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    version: 1.0.0
+    values:
+      guardApi:
+        enabled: true
+      portal:
+        enabled: true
+      tcpconnector:
+        enabled: true
+      scraper:
+        enabled: true
+      playwright:
+        enabled: true
+      coreWebapi:
+        enabled: true
+      coreWebevents:
+        enabled: true
+      workers:
+        price:
+          enabled: true
+        shift:
+          enabled: true
+        errorReports:
+          enabled: true
+        dispatches:
+          enabled: true
+        shifts:
+          enabled: true
+        totalizers:
+          enabled: true
+        tankstock:
+          enabled: true
+        ierp:
+          enabled: true

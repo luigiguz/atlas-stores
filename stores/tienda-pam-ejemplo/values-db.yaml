@@ -1,0 +1,17 @@
+# Overrides para poslite-db (referencia para tienda tipo PAM+BD+Cloudflare)
+# No commitear contraseñas en claro; usar SOPS/Sealed Secrets.
+
+postgresql:
+  timezone: "America/Panama"
+  database: poslite
+  user: sa
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 20Gi
+  accessMode: ReadWriteOnce
+
+pgadmin:
+  enabled: true
+  defaultEmail: admin@admin.com

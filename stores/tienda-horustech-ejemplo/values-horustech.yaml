@@ -1,0 +1,33 @@
+# Overrides para poslite-horustech (tienda tipo Horustech+BD+Cloudflare)
+
+guardApi:
+  enabled: true
+
+portal:
+  enabled: true
+
+webapi:
+  enabled: true
+
+coreWebapi:
+  enabled: true
+
+coreWebevents:
+  enabled: true
+
+coreLoyaltyConfigWorker:
+  enabled: true
+
+workers:
+  price:
+    enabled: true
+  shift:
+    enabled: true
+  errorReports:
+    enabled: true
+  dispatches:
+    enabled: true
+  tanks:
+    enabled: true
+  ierp:
+    enabled: true

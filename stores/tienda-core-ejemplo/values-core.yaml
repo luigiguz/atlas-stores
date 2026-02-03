@@ -1,0 +1,17 @@
+# Overrides para poslite-core (tienda tipo Core+BD+Cloudflare)
+
+portal:
+  enabled: true
+
+webapi:
+  enabled: true
+
+workers:
+  price:
+    enabled: true
+  shift:
+    enabled: true
+  errorReports:
+    enabled: true
+  ierp:
+    enabled: true

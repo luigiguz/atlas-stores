@@ -1,0 +1,92 @@
+defaultNamespace: poslite
+targetCustomizations:
+- name: db
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "tienda-horustech-ejemplo"
+  helm:
+    chart: poslite-db
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    version: 1.0.0
+    values:
+      postgresql:
+        timezone: "America/Panama"
+        database: poslite
+        user: sa
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 20Gi
+        accessMode: ReadWriteOnce
+      pgadmin:
+        enabled: true
+        defaultEmail: admin@admin.com
+- name: cloudflared-horustech
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "tienda-horustech-ejemplo"
+  helm:
+    chart: poslite-cloudflared-horustech
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    version: 1.0.0
+    values:
+      replicas: 1
+      hostNetwork: true
+      config:
+        tunnelId: ""
+        credentialsFile: ""
+        ingress:
+          - hostname: tienda-horustech-ejemplo-9010.asptienda.com
+            service: http://localhost:9010
+          - hostname: tienda-horustech-ejemplo-9012.asptienda.com
+            service: http://localhost:9012
+          - hostname: tienda-horustech-ejemplo-9014.asptienda.com
+            service: http://localhost:9014
+          - hostname: tienda-horustech-ejemplo-9015.asptienda.com
+            service: http://localhost:9015
+          - hostname: tienda-horustech-ejemplo-9020.asptienda.com
+            service: http://localhost:9020
+          - hostname: tienda-horustech-ejemplo-9021.asptienda.com
+            service: http://localhost:9021
+          - hostname: tienda-horustech-ejemplo-5050.asptienda.com
+            service: http://localhost:5050
+          - hostname: tienda-horustech-ejemplo-5432.asptienda.com
+            service: tcp://localhost:5432
+          - service: http_status:404
+- name: horustech
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "tienda-horustech-ejemplo"
+  helm:
+    chart: poslite-horustech
+    repo: oci://atlashelmrepo.azurecr.io/helm
+    version: 1.0.0
+    values:
+      guardApi:
+        enabled: true
+      portal:
+        enabled: true
+      webapi:
+        enabled: true
+      coreWebapi:
+        enabled: true
+      coreWebevents:
+        enabled: true
+      coreLoyaltyConfigWorker:
+        enabled: true
+      workers:
+        price:
+          enabled: true
+        shift:
+          enabled: true
+        errorReports:
+          enabled: true
+        dispatches:
+          enabled: true
+        tanks:
+          enabled: true
+        ierp:
+          enabled: true

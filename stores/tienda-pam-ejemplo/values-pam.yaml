@@ -1,0 +1,40 @@
+# Overrides para poslite-pam (tienda tipo PAM+BD+Cloudflare)
+
+guardApi:
+  enabled: true
+
+portal:
+  enabled: true
+
+tcpconnector:
+  enabled: true
+
+scraper:
+  enabled: true
+
+playwright:
+  enabled: true
+
+coreWebapi:
+  enabled: true
+
+coreWebevents:
+  enabled: true
+
+workers:
+  price:
+    enabled: true
+  shift:
+    enabled: true
+  errorReports:
+    enabled: true
+  dispatches:
+    enabled: true
+  shifts:
+    enabled: true
+  totalizers:
+    enabled: true
+  tankstock:
+    enabled: true
+  ierp:
+    enabled: true
