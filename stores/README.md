@@ -44,7 +44,7 @@ La carpeta del chart poslite-horustech se llama **horus** (no horustech) para qu
 
 Fleet crea 3 bundles: `stores/posdemos/db`, `stores/posdemos/cloudflared-horustech`, `stores/posdemos/horus`.
 
-Opcional: **`stores/posdemos/acr-secret/`** despliega el Secret para pull de imágenes de ACR (`acr-secret` en namespace `poslite`). Sustituye las credenciales en `secret.yaml` antes de commit. Fleet lo aplica automáticamente al hacer push. Los tres se aplican al cluster con label `store: "posdemos"`.
+Opcional: **`stores/posdemos/secret/`** despliega los Secrets en `poslite`: `acr-secret` (pull de imágenes ACR) y `horustech-cloudflared-credentials` (JSON del tunnel Cloudflare). Sustituye credenciales y el JSON en los YAML antes de commit. Fleet los aplica al hacer push.
 
 ## Uso
 

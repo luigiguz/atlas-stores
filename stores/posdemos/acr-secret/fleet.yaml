@@ -1,8 +1,0 @@
-# Bundle para desplegar el Secret de ACR en el cluster posdemos.
-# Fleet aplica automáticamente los YAML de esta carpeta en los clusters que coincidan.
-defaultNamespace: poslite
-targetCustomizations:
-- clusterSelector:
-    matchLabels:
-      atlas: "true"
-      store: "posdemos"
