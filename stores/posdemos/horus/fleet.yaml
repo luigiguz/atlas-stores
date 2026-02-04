@@ -9,31 +9,83 @@ targetCustomizations:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-ht
     version: 1.0.0
     values:
-      fullnameOverride: "horustech"
-      image:
-        tag: "unstable"
+      nameOverride: "horustech"
       guardApi:
         enabled: true
+        image:
+          tag: "unstable"
       portal:
         enabled: true
+        image:
+          tag: "unstable"
       webapi:
         enabled: true
+        image:
+          tag: "unstable"
       coreWebapi:
         enabled: true
+        image:
+          tag: "unstable"
       coreWebevents:
         enabled: true
+        image:
+          tag: "unstable"
       coreLoyaltyConfigWorker:
         enabled: true
+        image:
+          tag: "unstable"
       workers:
         price:
           enabled: true
+          image:
+            tag: "unstable"
         shift:
           enabled: true
+          image:
+            tag: "unstable"
         errorReports:
           enabled: true
+          image:
+            tag: "unstable"
         dispatches:
           enabled: true
+          image:
+            tag: "unstable"
         tanks:
           enabled: true
+          image:
+            tag: "unstable"
         ierp:
           enabled: true
+          dispatchesToInvoice:
+            enabled: true
+            image:
+              tag: "unstable"
+          dispatchPayments:
+            enabled: true
+            image:
+              tag: "unstable"
+          invoicesToIerp:
+            enabled: true
+            image:
+              tag: "unstable"
+          customers:
+            enabled: true
+            image:
+              tag: "unstable"
+          markets:
+            enabled: true
+            image:
+              tag: "unstable"
+          basicData:
+            enabled: true
+            image:
+              tag: "unstable"
+          invoiceSeries:
+            enabled: true
+            image:
+              tag: "unstable"
+          products:
+            enabled: true
+            image:
+              tag: "unstable"
