@@ -9,6 +9,7 @@ targetCustomizations:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-cloudflared-horustech
     version: 1.0.0
     values:
+      fullnameOverride: "horustech-cloudflared"
       replicas: 1
       hostNetwork: true
       config:

@@ -9,6 +9,7 @@ targetCustomizations:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-ht
     version: 1.0.0
     values:
+      fullnameOverride: "horustech"
       guardApi:
         enabled: true
       portal:

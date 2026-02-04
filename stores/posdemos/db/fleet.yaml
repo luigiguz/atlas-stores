@@ -9,6 +9,7 @@ targetCustomizations:
     chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
     version: 1.0.0
     values:
+      fullnameOverride: "poslite-db"
       postgresql:
         timezone: "America/Panama"
         database: poslite
