@@ -6,7 +6,7 @@ targetCustomizations:
       atlas: "true"
       store: "posdemos"
   helm:
-    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-horustech
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-ht
     version: 1.0.0
     values:
       guardApi:
