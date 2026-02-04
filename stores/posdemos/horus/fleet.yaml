@@ -10,82 +10,132 @@ targetCustomizations:
     version: 1.0.0
     values:
       nameOverride: "horustech"
+
+      config:
+        timezone: "America/Panama"
+        companyId: 1
+        coreApiKey: "TEST"
+        horustechApiKey: "TEST"
+        ierpUrl: "http://ierpgateway.azurewebsites.net/"
+        horustechIp: "192.168.10.92"
+        horustechPortWebapi: "857"
+        horustechPortWorkers: "1771"
+        horustechTanksIp: ""
+        horustechTlsPort: 10002
+
       guardApi:
         enabled: true
         image:
           tag: "unstable"
+        port: 8080
+        hostPort: 9015
+        replicas: 1
+
       portal:
         enabled: true
         image:
           tag: "unstable"
+        port: 8080
+        hostPort: 9014
+        replicas: 1
+
       webapi:
         enabled: true
         image:
           tag: "unstable"
+        port: 8080
+        hostPort: 9010
+        replicas: 1
+
       coreWebapi:
         enabled: true
         image:
           tag: "unstable"
+        port: 8080
+        hostPort: 9012
+        replicas: 1
+
       coreWebevents:
         enabled: true
         image:
           tag: "unstable"
+        port: 8080
+        hostPort: 9020
+        replicas: 1
+
       coreLoyaltyConfigWorker:
         enabled: true
         image:
           tag: "unstable"
+        port: 8080
+        hostPort: 9021
+        replicas: 1
+
       workers:
         price:
           enabled: true
           image:
             tag: "unstable"
+          replicas: 1
         shift:
           enabled: true
           image:
             tag: "unstable"
+          replicas: 1
         errorReports:
           enabled: true
           image:
             tag: "unstable"
+          replicas: 1
         dispatches:
           enabled: true
           image:
             tag: "unstable"
+          replicas: 1
         tanks:
           enabled: true
           image:
             tag: "unstable"
+          replicas: 1
         ierp:
           enabled: true
           dispatchesToInvoice:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
           dispatchPayments:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
           invoicesToIerp:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
           customers:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
           markets:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
           basicData:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
           invoiceSeries:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
           products:
             enabled: true
             image:
               tag: "unstable"
+            replicas: 1
