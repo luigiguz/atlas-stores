@@ -13,7 +13,9 @@ targetCustomizations:
       replicas: 1
       hostNetwork: true
       config:
-        tunnelId: ""
+        tunnelId: "f2616fcf-8d73-4298-912d-424904057a5d"
+        credentialsHostPath: "/root/.cloudflared"
+        credentials: ""
         credentialsFile: ""
         ingress:
           - hostname: posdemos-9010.asptienda.com
