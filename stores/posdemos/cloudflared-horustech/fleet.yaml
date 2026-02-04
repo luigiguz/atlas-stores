@@ -13,7 +13,7 @@ targetCustomizations:
       replicas: 1
       hostNetwork: true
       config:
-        tunnelId: "f2616fcf-8d73-4298-912d-424904057a5d"
+        tunnelId: "26f2a8a5-b2f9-4b06-808c-798049b6ef09"
         credentialsHostPath: "/root/.cloudflared"
         credentials: ""
         credentialsFile: ""
