@@ -10,6 +10,8 @@ targetCustomizations:
     version: 1.0.0
     values:
       fullnameOverride: "horustech"
+      image:
+        tag: "unstable"
       guardApi:
         enabled: true
       portal:
