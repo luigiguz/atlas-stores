@@ -1,6 +1,9 @@
-# Ignorar absolutamente todo
+# Ignorar todo
 **
 
-# Permitir solo stores/
-!stores/**
+# Permitir la carpeta stores y sus subcarpetas (para poder llegar a los archivos permitidos)
+!stores/
+!stores/*/
 
+# Permitir SOLO fleet.yaml dentro de cada store
+!stores/*/fleet.yaml
