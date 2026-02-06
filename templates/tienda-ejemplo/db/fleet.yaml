@@ -1,0 +1,25 @@
+defaultNamespace: poslite
+targetCustomizations:
+- name: db
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      store: "<id-tienda>"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-db
+    version: 1.0.0
+    values:
+      nameOverride: "poslite-db"
+      bundleVersion: "1.0.0"
+      postgresql:
+        timezone: "America/Panama"
+        database: poslite
+        user: sa
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 20Gi
+        accessMode: ReadWriteOnce
+      pgadmin:
+        enabled: true
+        defaultEmail: admin@admin.com

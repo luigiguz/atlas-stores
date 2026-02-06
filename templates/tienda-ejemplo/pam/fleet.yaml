@@ -1,0 +1,167 @@
+# Fleet para tiendas PAM. Despliega poslite-pam (portal, coreWebapi, tcpconnector, scraper, playwright, workers).
+# En el cluster deben estar también poslite-db y, para acceso externo, poslite-cloudflared-pam.
+# README: para PAM no desplegar poslite-core; PAM ya incluye portal y core.
+defaultNamespace: poslite
+targetCustomizations:
+- name: pam
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      poslite: pam
+      store: "<id-tienda>"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-pam
+    version: 1.0.0
+    values:
+      nameOverride: "pam"
+      # Config según poslite-pam values.yaml (claves en minúscula)
+      config:
+        timezone: "America/Panama"
+        companyId: 1
+        coreApiKey: "TEST"
+        pamApiKey: "TEST"
+        pamScraperApiKey: "TEST"
+        ierpUrl: "http://ierpgateway.azurewebsites.net/"
+        pamIp: ""           # IP del PAM de la tienda
+        pamPassword: ""     # Opcional; si se usa, preferir Secret externo
+        pamTcpPort: 997
+
+      guardApi:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 7015
+        replicas: 1
+
+      portal:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 7014
+        replicas: 1
+
+      tcpconnector:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 7010
+        replicas: 1
+
+      scraper:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 7016
+        replicas: 1
+
+      playwright:
+        enabled: true
+        image:
+          tag: "v1.49.0-noble"
+        port: 3320
+        hostPort: 7011
+        replicas: 1
+
+      coreWebapi:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 7012
+        replicas: 1
+
+      coreWebevents:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 7020
+        replicas: 1
+
+      workers:
+        price:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        shift:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        errorReports:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        dispatches:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        shifts:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        totalizers:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        tankstock:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        loyaltyConfig:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        ierp:
+          enabled: true
+          dispatchesToInvoice:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          dispatchPayments:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          invoicesToIerp:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          customers:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          markets:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          basicData:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          invoiceSeries:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          products:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1

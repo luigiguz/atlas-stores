@@ -1,0 +1,97 @@
+# Fleet para tiendas solo-Core (sin PAM ni Horustech). Despliega poslite-core (Portal, WebAPI, Workers).
+# En el cluster deben estar también poslite-db y, para acceso externo, poslite-cloudflared-core.
+# README: no desplegar poslite-pam ni poslite-horustech en clusters Core.
+defaultNamespace: poslite
+targetCustomizations:
+- name: core
+  clusterSelector:
+    matchLabels:
+      atlas: "true"
+      poslite: core
+      store: "<id-tienda>"
+  helm:
+    chart: oci://atlashelmrepo.azurecr.io/helm/poslite-core
+    version: 1.0.0
+    values:
+      nameOverride: "core"
+
+      config:
+        timezone: "America/Panama"
+        companyId: 1
+        coreApiKey: "TEST"
+        ierpUrl: "http://ierpgateway.azurewebsites.net/"
+
+      portal:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 10014
+        replicas: 1
+
+      webapi:
+        enabled: true
+        image:
+          tag: "<tag-imagen>"
+        port: 8080
+        hostPort: 10012
+        replicas: 1
+
+      workers:
+        price:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        shift:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        errorReports:
+          enabled: true
+          image:
+            tag: "<tag-imagen>"
+          replicas: 1
+        ierp:
+          enabled: true
+          dispatchesToInvoice:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          dispatchPayments:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          invoicesToIerp:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          customers:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          markets:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          basicData:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          invoiceSeries:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
+          products:
+            enabled: true
+            image:
+              tag: "<tag-imagen>"
+            replicas: 1
