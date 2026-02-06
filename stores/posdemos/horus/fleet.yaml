@@ -10,6 +10,7 @@ targetCustomizations:
     version: 1.0.0
     values:
       nameOverride: "horustech"
+      bundleVersion: "1.0.0"
 
       config:
         timezone: "America/Panama"

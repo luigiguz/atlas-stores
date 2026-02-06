@@ -10,6 +10,7 @@ targetCustomizations:
     version: 1.0.0
     values:
       nameOverride: "poslite-db"
+      bundleVersion: "1.0.0"
       postgresql:
         timezone: "America/Panama"
         database: poslite
