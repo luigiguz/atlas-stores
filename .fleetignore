@@ -1,3 +1,6 @@
-# Excluir plantillas: Fleet no debe crear bundles desde templates/
-# Solo se despliegan los fleet.yaml bajo stores/<id-tienda>/
-templates
+# Ignorar absolutamente todo
+**
+
+# Permitir solo stores/
+!stores/**
+
